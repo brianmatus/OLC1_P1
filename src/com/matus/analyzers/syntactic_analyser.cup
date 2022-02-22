@@ -1,0 +1,68 @@
+package com.matus.analyzers;
+import java_cup.runtime.Symbol;
+
+
+
+//terminal delimiters;
+terminal String comment, multicomment;
+terminal String s_newline;
+terminal String s_simplequote, s_doublequote, range, key_o, key_c, score, morethan, semicolon, colon, comma, section_separator;
+terminal String dot, asterisk, or_sign;
+terminal String range_special_char;
+terminal String id, word, number, string;
+
+non terminal String INICIO, E_PART1, E_PART2;
+non terminal String E_SET_DEFINITION, E_REGEX_DEFINITION, E_EXPR_TESTING;
+non terminal String E_RANGE_VALUE, E_RANGE_ELEMENT, E_RANGE_LIST;
+non terminal String E_REGEX_VALUE, E_REGEX_ELEMENT;
+
+
+start with INICIO;
+
+
+
+//INICIO::= key_o E_PART1 section_separator E_PART2 key_c;
+INICIO::= key_o E_PART1 key_c;
+
+E_PART1::=  E_SET_DEFINITION:d semicolon E_PART1 {: System.out.println("Grupo definido!:" + d); :}
+    | E_REGEX_DEFINITION:d semicolon E_PART1 {: System.out.println("Regex definido!:" + d); :}
+    |E_SET_DEFINITION:d semicolon {: System.out.println("Grupo definido!:" + d); :}
+    |E_REGEX_DEFINITION:d semicolon {: System.out.println("Regex definido!:" + d); :};
+
+
+
+
+//SET DEFINITIONS
+E_SET_DEFINITION::= id:w1 colon id:w2 score morethan E_RANGE_VALUE:val {: RESULT = "SET DEF-->keyword:" + w1 + " name:" + w2 + " val:" + val;  :};
+
+E_RANGE_VALUE::= E_RANGE_ELEMENT:a range E_RANGE_ELEMENT:b {: RESULT = a + " all the way thru " + b; :}
+    |E_RANGE_LIST:a {: RESULT = a; :};
+
+E_RANGE_LIST::= E_RANGE_LIST:a comma E_RANGE_ELEMENT:b {: RESULT = a + "<->" + b; :}
+    | E_RANGE_ELEMENT:a {: RESULT = "LIST->" + a; :};
+
+E_RANGE_ELEMENT::= id:a {: RESULT =  a;:}
+    |number:a {: RESULT = a; :}
+    |range_special_char:a {: RESULT = a; :}
+    |string:a {: RESULT = a; :};
+
+//REGEX DEFINITIONS
+E_REGEX_DEFINITION::= id:name score morethan E_REGEX_VALUE:val {: RESULT = "REGEX DEF-->name:" + name + " val:" + val;  :};
+
+E_REGEX_VALUE::= E_REGEX_VALUE:a E_REGEX_ELEMENT:b {: RESULT = a + "<->" + b; :}
+    |E_REGEX_ELEMENT:a{: RESULT = a; :};
+
+E_REGEX_ELEMENT::= dot:a {: RESULT =  a;:}
+    |id:a {: RESULT =  a;:}
+    |asterisk:a {: RESULT =  a;:}
+    |or_sign:a {: RESULT =  a;:}
+    |string:a {: RESULT =  a;:}
+    |number:a {: RESULT =  a;:};
+
+
+
+
+
+////////////////////
+E_PART2::= E_EXPR_TESTING semicolon E_PART2
+    | E_EXPR_TESTING semicolon;

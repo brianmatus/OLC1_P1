@@ -1,0 +1,5 @@
+{
+CONJ: uwu -> a~z;
+ExpReg1 -> .ab5.5;
+//Esto es comentario xd
+}
