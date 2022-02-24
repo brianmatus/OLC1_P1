@@ -1,5 +1,7 @@
 package com.matus.analyzers;
 
+import com.matus.Main;import com.matus.elements.LexicError;
+
 import java_cup.runtime.Symbol;
 import java_cup.runtime.*;
 
@@ -15,18 +17,17 @@ import java_cup.runtime.*;
 
 delimiters = [ \r\t\n]+
 comment = \/\/[^\r\n]*
-multicomment = <!.*!>
+multicomment = "<!".*"!>"
 word = [a-zA-Z]+
 number = [0-9]+
-string = \"[^\"]\"
+string = \"[^\"]*\"
 
 s_newline = \\n
 s_simplequote = \\'
 s_doublequote = \\\"
 range = \~
-
-//range_special_char = [!#-$&-+\.-/<-=\?@\[-`\|]|\" \" //TODO this are missing language chars like > - {} "space" //TODO remove dot, remove |
-
+//                                        space
+range_special_char = [!#-$&-\)/=\?@\[-`]|\" \" //TODO this are missing language chars like   {} "space" dot | //TODO CANT USE < cause of multi comment
 
 key_o = \{
 key_c = \}
@@ -38,43 +39,41 @@ comma = ,
 dot = \.
 asterisk = \*
 or_sign = \|
+plus_sign = \+
 
 id = {word}({word}*{number}*)*
 
 section_separator = \%\%
 
-
-
-
 %%
 <YYINITIAL>{delimiters} {}
-<YYINITIAL>{comment} {}
-<YYINITIAL>{multicomment} {}
+<YYINITIAL>{comment} { System.out.println("Reconocio token:<comment> lexema:"+yytext());Main.logToken("comment", yytext(), yyline, yycolumn); }
+<YYINITIAL>{multicomment} { System.out.println("Reconocio token:<multicomment> lexema:"+yytext());Main.logToken("multicomment", yytext(), yyline, yycolumn);}
 
-<YYINITIAL>{id} {System.out.println("Reconocio token:<id> lexema:"+yytext());return new Symbol(Symbols.id, yycolumn, yyline, yytext());}
-//<YYINITIAL>{word} {System.out.println("Reconocio token:<word> lexema:"+yytext());return new Symbol(Symbols.word, yycolumn, yyline, yytext());}
-<YYINITIAL>{number} {System.out.println("Reconocio token:<number> lexema:"+yytext());return new Symbol(Symbols.number, yycolumn, yyline, yytext());}
-<YYINITIAL>{string} {System.out.println("Reconocio token:<string> lexema:"+yytext());return new Symbol(Symbols.string, yycolumn, yyline, yytext());}
+<YYINITIAL>{id} {System.out.println("Reconocio token:<id> lexema:"+yytext());Main.logToken("id", yytext(), yyline, yycolumn);return new Symbol(Symbols.id, yycolumn, yyline, yytext());}
+//<YYINITIAL>{word} {System.out.println("Reconocio token:<word> lexema:"+yytext());Main.logToken("comment", yytext(), yyline, yycolumn);return new Symbol(Symbols.word, yycolumn, yyline, yytext());}
+<YYINITIAL>{number} {System.out.println("Reconocio token:<number> lexema:"+yytext());Main.logToken("number", yytext(), yyline, yycolumn);return new Symbol(Symbols.number, yycolumn, yyline, yytext());}
+<YYINITIAL>{string} {System.out.println("Reconocio token:<string> lexema:"+yytext());Main.logToken("string", yytext(), yyline, yycolumn);return new Symbol(Symbols.string, yycolumn, yyline, yytext());}
 
-<YYINITIAL>{s_newline} {System.out.println("Reconocio token:<s_newline> lexema:"+yytext());return new Symbol(Symbols.s_newline, yycolumn, yyline, yytext());}
-<YYINITIAL>{s_simplequote} {System.out.println("Reconocio token:<s_simplequote> lexema:"+yytext());return new Symbol(Symbols.s_simplequote, yycolumn, yyline, yytext());}
-<YYINITIAL>{s_doublequote} {System.out.println("Reconocio token:<s_doublequote> lexema:"+yytext());return new Symbol(Symbols.s_doublequote, yycolumn, yyline, yytext());}
-<YYINITIAL>{range} {System.out.println("Reconocio token:<range> lexema:"+yytext());return new Symbol(Symbols.range, yycolumn, yyline, yytext());}
+<YYINITIAL>{s_newline} {System.out.println("Reconocio token:<s_newline> lexema:"+yytext());Main.logToken("s_newline", yytext(), yyline, yycolumn);return new Symbol(Symbols.s_newline, yycolumn, yyline, yytext());}
+<YYINITIAL>{s_simplequote} {System.out.println("Reconocio token:<s_simplequote> lexema:"+yytext());Main.logToken("s_simplequote", yytext(), yyline, yycolumn);return new Symbol(Symbols.s_simplequote, yycolumn, yyline, yytext());}
+<YYINITIAL>{s_doublequote} {System.out.println("Reconocio token:<s_doublequote> lexema:"+yytext());Main.logToken("s_doublequote", yytext(), yyline, yycolumn);return new Symbol(Symbols.s_doublequote, yycolumn, yyline, yytext());}
+<YYINITIAL>{range} {System.out.println("Reconocio token:<range> lexema:"+yytext());Main.logToken("range", yytext(), yyline, yycolumn);return new Symbol(Symbols.range, yycolumn, yyline, yytext());}
 
-//<YYINITIAL>{range_special_char} {System.out.println("Reconocio token:<range_special_char> lexema:"+yytext());return new Symbol(Symbols.range_special_char, yycolumn, yyline, yytext());}
+<YYINITIAL>{range_special_char} {System.out.println("Reconocio token:<range_special_char> lexema:"+yytext());Main.logToken("range_special_char", yytext(), yyline, yycolumn);return new Symbol(Symbols.range_special_char, yycolumn, yyline, yytext());}
 
-<YYINITIAL>{key_o} {System.out.println("Reconocio token:<key_o> lexema:"+yytext());return new Symbol(Symbols.key_o, yycolumn, yyline, yytext());}
-<YYINITIAL>{key_c} {System.out.println("Reconocio token:<key_c> lexema:"+yytext());return new Symbol(Symbols.key_c, yycolumn, yyline, yytext());}
-<YYINITIAL>{score} {System.out.println("Reconocio token:<score> lexema:"+yytext());return new Symbol(Symbols.score, yycolumn, yyline, yytext());}
-<YYINITIAL>{morethan} {System.out.println("Reconocio token:<morethan> lexema:"+yytext());return new Symbol(Symbols.morethan, yycolumn, yyline, yytext());}
-<YYINITIAL>{colon} {System.out.println("Reconocio token:<colon> lexema:"+yytext());return new Symbol(Symbols.colon, yycolumn, yyline, yytext());}
-<YYINITIAL>{semicolon} {System.out.println("Reconocio token:<semicolon> lexema:"+yytext());return new Symbol(Symbols.semicolon, yycolumn, yyline, yytext());}
-<YYINITIAL>{comma} {System.out.println("Reconocio token:<comma> lexema:"+yytext());return new Symbol(Symbols.comma, yycolumn, yyline, yytext());}
-<YYINITIAL>{dot} {System.out.println("Reconocio token:<dot> lexema:"+yytext());return new Symbol(Symbols.dot, yycolumn, yyline, yytext());}
-<YYINITIAL>{asterisk} {System.out.println("Reconocio token:<asterisk> lexema:"+yytext());return new Symbol(Symbols.asterisk, yycolumn, yyline, yytext());}
-<YYINITIAL>{or_sign} {System.out.println("Reconocio token:<or_sign> lexema:"+yytext());return new Symbol(Symbols.or_sign, yycolumn, yyline, yytext());}
+<YYINITIAL>{key_o} {System.out.println("Reconocio token:<key_o> lexema:"+yytext());Main.logToken("key_o", yytext(), yyline, yycolumn);return new Symbol(Symbols.key_o, yycolumn, yyline, yytext());}
+<YYINITIAL>{key_c} {System.out.println("Reconocio token:<key_c> lexema:"+yytext());Main.logToken("key_c", yytext(), yyline, yycolumn);return new Symbol(Symbols.key_c, yycolumn, yyline, yytext());}
+<YYINITIAL>{score} {System.out.println("Reconocio token:<score> lexema:"+yytext());Main.logToken("score", yytext(), yyline, yycolumn);return new Symbol(Symbols.score, yycolumn, yyline, yytext());}
+<YYINITIAL>{morethan} {System.out.println("Reconocio token:<morethan> lexema:"+yytext());Main.logToken("morethan", yytext(), yyline, yycolumn);return new Symbol(Symbols.morethan, yycolumn, yyline, yytext());}
+<YYINITIAL>{colon} {System.out.println("Reconocio token:<colon> lexema:"+yytext());Main.logToken("colon", yytext(), yyline, yycolumn);return new Symbol(Symbols.colon, yycolumn, yyline, yytext());}
+<YYINITIAL>{semicolon} {System.out.println("Reconocio token:<semicolon> lexema:"+yytext());Main.logToken("semicolon", yytext(), yyline, yycolumn);return new Symbol(Symbols.semicolon, yycolumn, yyline, yytext());}
+<YYINITIAL>{comma} {System.out.println("Reconocio token:<comma> lexema:"+yytext());Main.logToken("comma", yytext(), yyline, yycolumn);return new Symbol(Symbols.comma, yycolumn, yyline, yytext());}
+<YYINITIAL>{dot} {System.out.println("Reconocio token:<dot> lexema:"+yytext());Main.logToken("dot", yytext(), yyline, yycolumn);return new Symbol(Symbols.dot, yycolumn, yyline, yytext());}
+<YYINITIAL>{asterisk} {System.out.println("Reconocio token:<asterisk> lexema:"+yytext());Main.logToken("asterisk", yytext(), yyline, yycolumn);return new Symbol(Symbols.asterisk, yycolumn, yyline, yytext());}
+<YYINITIAL>{or_sign} {System.out.println("Reconocio token:<or_sign> lexema:"+yytext());Main.logToken("or_sign", yytext(), yyline, yycolumn);return new Symbol(Symbols.or_sign, yycolumn, yyline, yytext());}
 
-<YYINITIAL>{section_separator} {System.out.println("Reconocio token:<section_separator> lexema:"+yytext());return new Symbol(Symbols.section_separator, yycolumn, yyline, yytext());}
+<YYINITIAL>{section_separator} {System.out.println("Reconocio token:<section_separator> lexema:"+yytext());Main.logToken("section_separator", yytext(), yyline, yycolumn);return new Symbol(Symbols.section_separator, yycolumn, yyline, yytext());}
 
 
-<YYINITIAL>. {System.out.println("Error Lexico : "+yytext()+"Linea"+yyline+" Columna "+yycolumn);}
+<YYINITIAL>. {System.out.println("Error Lexico: "+yytext()+" Linea:"+yyline+" Columna:"+yycolumn);throw new Error("Illegal character <"+yytext()+">");}

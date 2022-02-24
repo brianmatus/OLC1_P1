@@ -6,11 +6,11 @@ CONJ: uwu -> 5~z ;
 CONJ: uwu -> 5~z ;
 
 //a
-//aa xd xdxd
-<! ola !>
+//aa xd xdxd 
+<! aaa !>
 %%
+
 Test1: "equisdexD  ";
 //TEst2: " .test2jaja";
-
 
 }

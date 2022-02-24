@@ -6,6 +6,8 @@
 package com.matus.analyzers;
 
 import java_cup.runtime.Symbol;
+import com.matus.elements.Token;
+import com.matus.elements.SyntacticError;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -31,15 +33,17 @@ public class SyntacticAnalyzer extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\032\000\002\002\004\000\002\002\005\000\002\003" +
-    "\005\000\002\003\005\000\002\003\004\000\002\003\004" +
-    "\000\002\005\010\000\002\010\005\000\002\010\003\000" +
+    "\000\043\000\002\002\004\000\002\002\007\000\002\003" +
+    "\004\000\002\003\004\000\002\003\003\000\002\003\003" +
+    "\000\002\005\011\000\002\010\005\000\002\010\003\000" +
     "\002\012\005\000\002\012\003\000\002\011\003\000\002" +
-    "\011\003\000\002\011\003\000\002\011\003\000\002\006" +
-    "\006\000\002\013\004\000\002\013\003\000\002\014\003" +
-    "\000\002\014\003\000\002\014\003\000\002\014\003\000" +
-    "\002\014\003\000\002\014\003\000\002\004\005\000\002" +
-    "\004\004" });
+    "\011\003\000\002\011\003\000\002\011\003\000\002\011" +
+    "\003\000\002\011\003\000\002\011\003\000\002\011\003" +
+    "\000\002\011\003\000\002\011\003\000\002\011\003\000" +
+    "\002\006\007\000\002\013\004\000\002\013\003\000\002" +
+    "\014\003\000\002\014\003\000\002\014\003\000\002\014" +
+    "\003\000\002\014\003\000\002\014\003\000\002\014\003" +
+    "\000\002\004\005\000\002\004\004\000\002\007\005" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -47,37 +51,54 @@ public class SyntacticAnalyzer extends java_cup.runtime.lr_parser {
   /** Parse-action table. */
   protected static final short[][] _action_table = 
     unpackFromStrings(new String[] {
-    "\000\047\000\004\012\005\001\002\000\004\002\051\001" +
-    "\002\000\004\026\011\001\002\000\004\013\050\001\002" +
-    "\000\004\016\046\001\002\000\004\016\044\001\002\000" +
-    "\006\014\013\017\012\001\002\000\004\026\026\001\002" +
-    "\000\004\015\014\001\002\000\016\022\016\023\023\024" +
-    "\017\026\024\030\021\031\020\001\002\000\020\016\ufff0" +
-    "\022\ufff0\023\ufff0\024\ufff0\026\ufff0\030\ufff0\031\ufff0\001" +
-    "\002\000\020\016\uffef\022\uffef\023\uffef\024\uffef\026\uffef" +
-    "\030\uffef\031\uffef\001\002\000\020\016\uffec\022\uffec\023" +
-    "\uffec\024\uffec\026\uffec\030\uffec\031\uffec\001\002\000\020" +
-    "\016\uffeb\022\uffeb\023\uffeb\024\uffeb\026\uffeb\030\uffeb\031" +
-    "\uffeb\001\002\000\020\016\uffea\022\uffea\023\uffea\024\uffea" +
-    "\026\uffea\030\uffea\031\uffea\001\002\000\020\016\ufff2\022" +
-    "\016\023\023\024\017\026\024\030\021\031\020\001\002" +
-    "\000\020\016\uffed\022\uffed\023\uffed\024\uffed\026\uffed\030" +
-    "\uffed\031\uffed\001\002\000\020\016\uffee\022\uffee\023\uffee" +
-    "\024\uffee\026\uffee\030\uffee\031\uffee\001\002\000\020\016" +
-    "\ufff1\022\ufff1\023\ufff1\024\ufff1\026\ufff1\030\ufff1\031\ufff1" +
-    "\001\002\000\004\014\027\001\002\000\004\015\030\001" +
-    "\002\000\012\025\035\026\037\030\036\031\034\001\002" +
-    "\000\004\016\ufffb\001\002\000\006\016\ufff9\020\042\001" +
-    "\002\000\010\011\040\016\ufff7\020\ufff7\001\002\000\010" +
-    "\011\ufff3\016\ufff3\020\ufff3\001\002\000\010\011\ufff4\016" +
-    "\ufff4\020\ufff4\001\002\000\010\011\ufff5\016\ufff5\020\ufff5" +
-    "\001\002\000\010\011\ufff6\016\ufff6\020\ufff6\001\002\000" +
-    "\012\025\035\026\037\030\036\031\034\001\002\000\004" +
-    "\016\ufffa\001\002\000\012\025\035\026\037\030\036\031" +
-    "\034\001\002\000\006\016\ufff8\020\ufff8\001\002\000\006" +
-    "\013\ufffc\026\011\001\002\000\004\013\ufffe\001\002\000" +
-    "\006\013\ufffd\026\011\001\002\000\004\013\uffff\001\002" +
-    "\000\004\002\000\001\002\000\004\002\001\001\002" });
+    "\000\067\000\004\010\005\001\002\000\004\002\071\001" +
+    "\002\000\004\025\011\001\002\000\006\017\060\025\011" +
+    "\001\002\000\006\017\ufffd\025\ufffd\001\002\000\006\017" +
+    "\ufffc\025\ufffc\001\002\000\006\012\013\015\012\001\002" +
+    "\000\004\025\030\001\002\000\004\013\014\001\002\000" +
+    "\020\020\016\021\020\022\021\023\025\025\017\027\023" +
+    "\030\024\001\002\000\022\014\uffe9\020\uffe9\021\uffe9\022" +
+    "\uffe9\023\uffe9\025\uffe9\027\uffe9\030\uffe9\001\002\000\022" +
+    "\014\uffe8\020\uffe8\021\uffe8\022\uffe8\023\uffe8\025\uffe8\027" +
+    "\uffe8\030\uffe8\001\002\000\022\014\uffe7\020\uffe7\021\uffe7" +
+    "\022\uffe7\023\uffe7\025\uffe7\027\uffe7\030\uffe7\001\002\000" +
+    "\022\014\uffe6\020\uffe6\021\uffe6\022\uffe6\023\uffe6\025\uffe6" +
+    "\027\uffe6\030\uffe6\001\002\000\022\014\uffe5\020\uffe5\021" +
+    "\uffe5\022\uffe5\023\uffe5\025\uffe5\027\uffe5\030\uffe5\001\002" +
+    "\000\022\014\027\020\016\021\020\022\021\023\025\025" +
+    "\017\027\023\030\024\001\002\000\022\014\uffe3\020\uffe3" +
+    "\021\uffe3\022\uffe3\023\uffe3\025\uffe3\027\uffe3\030\uffe3\001" +
+    "\002\000\022\014\uffe4\020\uffe4\021\uffe4\022\uffe4\023\uffe4" +
+    "\025\uffe4\027\uffe4\030\uffe4\001\002\000\022\014\uffe2\020" +
+    "\uffe2\021\uffe2\022\uffe2\023\uffe2\025\uffe2\027\uffe2\030\uffe2" +
+    "\001\002\000\022\014\uffea\020\uffea\021\uffea\022\uffea\023" +
+    "\uffea\025\uffea\027\uffea\030\uffea\001\002\000\006\017\uffeb" +
+    "\025\uffeb\001\002\000\004\012\031\001\002\000\004\013" +
+    "\032\001\002\000\030\010\045\011\040\012\037\013\044" +
+    "\020\034\022\036\023\046\024\047\025\035\027\041\030" +
+    "\043\001\002\000\006\014\ufff9\016\054\001\002\000\010" +
+    "\007\uffee\014\uffee\016\uffee\001\002\000\010\007\ufff6\014" +
+    "\ufff6\016\ufff6\001\002\000\010\007\uffed\014\uffed\016\uffed" +
+    "\001\002\000\010\007\ufff1\014\ufff1\016\ufff1\001\002\000" +
+    "\010\007\uffef\014\uffef\016\uffef\001\002\000\010\007\ufff5" +
+    "\014\ufff5\016\ufff5\001\002\000\010\007\052\014\ufff7\016" +
+    "\ufff7\001\002\000\010\007\ufff3\014\ufff3\016\ufff3\001\002" +
+    "\000\010\007\ufff2\014\ufff2\016\ufff2\001\002\000\010\007" +
+    "\ufff0\014\ufff0\016\ufff0\001\002\000\010\007\uffec\014\uffec" +
+    "\016\uffec\001\002\000\010\007\ufff4\014\ufff4\016\ufff4\001" +
+    "\002\000\004\014\051\001\002\000\006\017\ufffb\025\ufffb" +
+    "\001\002\000\030\010\045\011\040\012\037\013\044\020" +
+    "\034\022\036\023\046\024\047\025\035\027\041\030\043" +
+    "\001\002\000\004\014\ufffa\001\002\000\030\010\045\011" +
+    "\040\012\037\013\044\020\034\022\036\023\046\024\047" +
+    "\025\035\027\041\030\043\001\002\000\006\014\ufff8\016" +
+    "\ufff8\001\002\000\006\017\uffff\025\uffff\001\002\000\006" +
+    "\017\ufffe\025\ufffe\001\002\000\004\025\062\001\002\000" +
+    "\004\014\067\001\002\000\004\015\065\001\002\000\004" +
+    "\011\064\001\002\000\004\002\000\001\002\000\004\030" +
+    "\066\001\002\000\004\014\uffdf\001\002\000\006\011\uffe0" +
+    "\025\062\001\002\000\004\011\uffe1\001\002\000\004\002" +
+    "\001\001\002" });
 
   /** Access to parse-action table. */
   public short[][] action_table() {return _action_table;}
@@ -85,21 +106,26 @@ public class SyntacticAnalyzer extends java_cup.runtime.lr_parser {
   /** <code>reduce_goto</code> table. */
   protected static final short[][] _reduce_table = 
     unpackFromStrings(new String[] {
-    "\000\047\000\004\002\003\001\001\000\002\001\001\000" +
-    "\010\003\005\005\006\006\007\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\002\001\001\000\002\001\001\000\006\013\021\014\014" +
-    "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\004\014\024" +
-    "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\010\010\030" +
-    "\011\032\012\031\001\001\000\002\001\001\000\002\001" +
+    "\000\067\000\004\002\003\001\001\000\002\001\001\000" +
+    "\010\003\005\005\006\006\007\001\001\000\006\005\055" +
+    "\006\056\001\001\000\002\001\001\000\002\001\001\000" +
+    "\002\001\001\000\002\001\001\000\002\001\001\000\006" +
+    "\013\021\014\014\001\001\000\002\001\001\000\002\001" +
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\004\011\040\001" +
-    "\001\000\002\001\001\000\004\011\042\001\001\000\002" +
-    "\001\001\000\010\003\044\005\006\006\007\001\001\000" +
-    "\002\001\001\000\010\003\046\005\006\006\007\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001" });
+    "\000\004\014\025\001\001\000\002\001\001\000\002\001" +
+    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
+    "\000\002\001\001\000\002\001\001\000\010\010\047\011" +
+    "\041\012\032\001\001\000\002\001\001\000\002\001\001" +
+    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
+    "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
+    "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
+    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
+    "\000\004\011\052\001\001\000\002\001\001\000\004\011" +
+    "\054\001\001\000\002\001\001\000\002\001\001\000\002" +
+    "\001\001\000\006\004\062\007\060\001\001\000\002\001" +
+    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
+    "\000\002\001\001\000\002\001\001\000\006\004\067\007" +
+    "\060\001\001\000\002\001\001\000\002\001\001" });
 
   /** Access to <code>reduce_goto</code> table. */
   public short[][] reduce_table() {return _reduce_table;}
@@ -176,77 +202,92 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 1: // INICIO ::= key_o E_PART1 key_c 
+          case 1: // INICIO ::= key_o E_PART1 section_separator E_PART2 key_c 
             {
               String RESULT =null;
-
-              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("INICIO",0, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
-            }
-          return CUP$SyntacticAnalyzer$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 2: // E_PART1 ::= E_SET_DEFINITION semicolon E_PART1 
-            {
-              String RESULT =null;
-		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
-		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).right;
-		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).value;
-		 System.out.println("Grupo definido!:" + d); 
-              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART1",1, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
-            }
-          return CUP$SyntacticAnalyzer$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 3: // E_PART1 ::= E_REGEX_DEFINITION semicolon E_PART1 
-            {
-              String RESULT =null;
-		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
-		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).right;
-		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).value;
-		 System.out.println("Regex definido!:" + d); 
-              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART1",1, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
-            }
-          return CUP$SyntacticAnalyzer$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 4: // E_PART1 ::= E_SET_DEFINITION semicolon 
-            {
-              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).value;
+		int bleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).left;
+		int bright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).right;
+		String b = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).value;
+		int cleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
+		int cright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).right;
+		String c = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).value;
 		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
 		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).right;
 		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).value;
+		int eleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String e = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 System.out.println("Sintactico terminado");  RESULT = a+b+c+d+e; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("INICIO",0, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 2: // E_PART1 ::= E_PART1 E_SET_DEFINITION 
+            {
+              String RESULT =null;
+		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
 		 System.out.println("Grupo definido!:" + d); 
               CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART1",1, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
             }
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 5: // E_PART1 ::= E_REGEX_DEFINITION semicolon 
+          case 3: // E_PART1 ::= E_PART1 E_REGEX_DEFINITION 
             {
               String RESULT =null;
-		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
-		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).right;
-		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).value;
+		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
 		 System.out.println("Regex definido!:" + d); 
               CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART1",1, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
             }
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 6: // E_SET_DEFINITION ::= id colon id score morethan E_RANGE_VALUE 
+          case 4: // E_PART1 ::= E_SET_DEFINITION 
             {
               String RESULT =null;
-		int w1left = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-5)).left;
-		int w1right = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-5)).right;
-		String w1 = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-5)).value;
-		int w2left = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).left;
-		int w2right = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).right;
-		String w2 = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).value;
-		int valleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
-		int valright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
-		String val = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 System.out.println("ultimo Regex definido!:" + d); 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART1",1, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 5: // E_PART1 ::= E_REGEX_DEFINITION 
+            {
+              String RESULT =null;
+		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 System.out.println("ultimo Regex definido!:" + d); 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART1",1, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 6: // E_SET_DEFINITION ::= id colon id score morethan E_RANGE_VALUE semicolon 
+            {
+              String RESULT =null;
+		int w1left = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-6)).left;
+		int w1right = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-6)).right;
+		String w1 = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-6)).value;
+		int w2left = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).left;
+		int w2right = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).right;
+		String w2 = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).value;
+		int valleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
+		int valright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).right;
+		String val = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).value;
 		 RESULT = "SET DEF-->keyword:" + w1 + " name:" + w2 + " val:" + val;  
-              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_SET_DEFINITION",3, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-5)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_SET_DEFINITION",3, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-6)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
             }
           return CUP$SyntacticAnalyzer$result;
 
@@ -353,22 +394,106 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 15: // E_REGEX_DEFINITION ::= id score morethan E_REGEX_VALUE 
+          case 15: // E_RANGE_ELEMENT ::= morethan 
             {
               String RESULT =null;
-		int nameleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).left;
-		int nameright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).right;
-		String name = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).value;
-		int valleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
-		int valright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
-		String val = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
-		 RESULT = "REGEX DEF-->name:" + name + " val:" + val;  
-              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_REGEX_DEFINITION",4, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = a; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_RANGE_ELEMENT",7, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
             }
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 16: // E_REGEX_VALUE ::= E_REGEX_VALUE E_REGEX_ELEMENT 
+          case 16: // E_RANGE_ELEMENT ::= score 
+            {
+              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = a; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_RANGE_ELEMENT",7, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 17: // E_RANGE_ELEMENT ::= key_o 
+            {
+              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = a; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_RANGE_ELEMENT",7, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 18: // E_RANGE_ELEMENT ::= key_c 
+            {
+              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = a; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_RANGE_ELEMENT",7, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 19: // E_RANGE_ELEMENT ::= dot 
+            {
+              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = a; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_RANGE_ELEMENT",7, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 20: // E_RANGE_ELEMENT ::= or_sign 
+            {
+              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = a; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_RANGE_ELEMENT",7, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 21: // E_RANGE_ELEMENT ::= plus_sign 
+            {
+              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = a; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_RANGE_ELEMENT",7, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 22: // E_REGEX_DEFINITION ::= id score morethan E_REGEX_VALUE semicolon 
+            {
+              String RESULT =null;
+		int nameleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).left;
+		int nameright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).right;
+		String name = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).value;
+		int valleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
+		int valright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).right;
+		String val = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).value;
+		 RESULT = "REGEX DEF-->name:" + name + " val:" + val;  
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_REGEX_DEFINITION",4, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 23: // E_REGEX_VALUE ::= E_REGEX_VALUE E_REGEX_ELEMENT 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
@@ -383,7 +508,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 17: // E_REGEX_VALUE ::= E_REGEX_ELEMENT 
+          case 24: // E_REGEX_VALUE ::= E_REGEX_ELEMENT 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -395,7 +520,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 18: // E_REGEX_ELEMENT ::= dot 
+          case 25: // E_REGEX_ELEMENT ::= dot 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -407,7 +532,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 19: // E_REGEX_ELEMENT ::= id 
+          case 26: // E_REGEX_ELEMENT ::= id 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -419,7 +544,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 20: // E_REGEX_ELEMENT ::= asterisk 
+          case 27: // E_REGEX_ELEMENT ::= asterisk 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -431,7 +556,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 21: // E_REGEX_ELEMENT ::= or_sign 
+          case 28: // E_REGEX_ELEMENT ::= or_sign 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -443,7 +568,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 22: // E_REGEX_ELEMENT ::= string 
+          case 29: // E_REGEX_ELEMENT ::= string 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -455,7 +580,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 23: // E_REGEX_ELEMENT ::= number 
+          case 30: // E_REGEX_ELEMENT ::= number 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -467,20 +592,53 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 24: // E_PART2 ::= E_EXPR_TESTING semicolon E_PART2 
+          case 31: // E_REGEX_ELEMENT ::= plus_sign 
             {
               String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT =  a;
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_REGEX_ELEMENT",10, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
 
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 32: // E_PART2 ::= E_EXPR_TESTING semicolon E_PART2 
+            {
+              String RESULT =null;
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).value;
+		 System.out.println("Testeo de regex: " + a);
               CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART2",2, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
             }
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 25: // E_PART2 ::= E_EXPR_TESTING semicolon 
+          case 33: // E_PART2 ::= E_EXPR_TESTING semicolon 
             {
               String RESULT =null;
-
+		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).value;
+		 System.out.println("Testeo de regex:" + a);
               CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART2",2, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 34: // E_EXPR_TESTING ::= id colon string 
+            {
+              String RESULT =null;
+		int nameleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
+		int nameright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).right;
+		String name = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).value;
+		int rgxleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
+		int rgxright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
+		String rgx = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
+		 RESULT = name + "<->" + rgx; 
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_EXPR_TESTING",5, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
             }
           return CUP$SyntacticAnalyzer$result;
 
