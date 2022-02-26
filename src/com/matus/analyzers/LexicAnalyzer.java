@@ -521,10 +521,12 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
         case '\u2028':  // fall through
         case '\u2029':
           yyline++;
+          yycolumn = 0;
           zzR = false;
           break;
         case '\r':
           yyline++;
+          yycolumn = 0;
           zzR = true;
           break;
         case '\n':
@@ -532,10 +534,12 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
             zzR = false;
           else {
             yyline++;
+            yycolumn = 0;
           }
           break;
         default:
           zzR = false;
+          yycolumn += zzCharCount;
         }
       }
 
@@ -626,7 +630,7 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { System.out.println("Error Lexico: "+yytext()+" Linea:"+yyline+" Columna:"+yycolumn);throw new Error("Illegal character <"+yytext()+">");
+            { Main.logLexicError(yytext(),yyline, yycolumn);System.out.println("Error Lexico: "+yytext()+" Linea:"+yyline+" Columna:"+yycolumn);if (Main.stopLexOnError){throw new Error("Illegal character <"+yytext()+">");}
             } 
             // fall through
           case 24: break;
@@ -646,7 +650,7 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
             // fall through
           case 27: break;
           case 5: 
-            { System.out.println("Reconocio token:<id> lexema:"+yytext());Main.logToken("id", yytext(), yyline, yycolumn);return new Symbol(Symbols.id, yycolumn, yyline, yytext());
+            { System.out.println("Reconocio token:<id> lexema:"+yytext() + "-" + yyline + "-" + yycolumn);Main.logToken("id", yytext(), yyline, yycolumn);return new Symbol(Symbols.id, yycolumn, yyline, yytext());
             } 
             // fall through
           case 28: break;
@@ -671,7 +675,7 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
             // fall through
           case 32: break;
           case 10: 
-            { System.out.println("Reconocio token:<score> lexema:"+yytext());Main.logToken("score", yytext(), yyline, yycolumn);return new Symbol(Symbols.score, yycolumn, yyline, yytext());
+            { System.out.println("Reconocio token:<score> lexema:"+yytext() + "-" + yyline + "-" + yycolumn);Main.logToken("score", yytext(), yyline, yycolumn);return new Symbol(Symbols.score, yycolumn, yyline, yytext());
             } 
             // fall through
           case 33: break;

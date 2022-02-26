@@ -8,51 +8,165 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.matus.analyzers.LexicAnalyzer;
-import com.matus.analyzers.Symbols;
 import com.matus.analyzers.SyntacticAnalyzer;
+import com.matus.elements.Group;
 import com.matus.elements.LexicError;
+import com.matus.elements.SyntacticError;
 import com.matus.elements.Token;
 import com.matus.exceptions.InvalidCharacterException;
+import com.matus.gui.MainWindow;
 import java_cup.runtime.Symbol;
+
+import javax.swing.*;
 
 
 public class Main {
 
     //Internal vars
     private static boolean debug = true;
-    private static final Scanner scanner = new Scanner(System.in);
+    public static boolean debugLoadExp = true;
 
-    //Global settings
-    private static boolean stopLexOnError = true;
+    public static boolean stopLexOnError = true;
+    public static boolean groupDefinitionIsUppercase = true;
+
+
+    //Global utils
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final MainWindow mainWindow = new MainWindow();
 
     //Lists
     private static List<Token> tokenList= new ArrayList<>();
+
     private static List<LexicError> lexicErrorList= new ArrayList<>();
+    private static List<SyntacticError> syntacticErrorList= new ArrayList<>();
+
+    private static List<Group> groupList = new ArrayList<>();
+    private static List<Group> regexList = new ArrayList<>();
+    //private static List<RegexTest> regexTestList = new ArrayList<>();
 
 
     public static void main(String[] args){
+
+        mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
+        mainWindow.setVisible (true);
+        //parseExpFile();
+
+        System.out.println("calma, se manejo todo");
+        //mainWindow.setVisible (true);
+    }
+
+
+
+
+
+
+    //0: success
+    //1: lexic error (remember to clean tables)
+    //2: syntactic error (remember to clean tables)
+    //3: File error
+    public static int parseExpFile() {
+        //Cleaning
+        mainWindow.outputTextArea.setText("");
+
+        String input = mainWindow.inputTextArea.getText();
+        System.out.println("TEXTO A ANALIZAR:");
+        System.out.println(input);
+
+        FileHandler.writeToFile("./tmp.exp", input, false);
         try {
             LexicAnalyzer lexic = new LexicAnalyzer(
-                    new BufferedReader(new FileReader("./entrada.txt"))
+                    new BufferedReader(new FileReader("./tmp.exp"))
             );
 
             SyntacticAnalyzer syntactic = new SyntacticAnalyzer(lexic);
-            Symbol ola = syntactic.parse();
-            System.out.println(ola);
+            Symbol result = syntactic.parse();
+            System.out.println(result);
 
         } catch (InvalidCharacterException e) {
             //e.printStackTrace();
             //Lexic error logged by self class, no need for code
+            return 1;
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return 3;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            //e.printStackTrace();
+            return 2;
             //Syntactic error logged by self class, no need for code
         }
+
+        //No error catched? sheeesh
+        dprint("no paso nada oiga");
+        return 0;
     }
 
-    
+    public static void logGroup(String keyword, String name, String rawData, int row, int column) {
+
+        //Correct keyword
+        if (groupDefinitionIsUppercase) {
+            if (!keyword.equals("CONJ")) {
+                String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case sensitive) (%s en f:%s c:%s", keyword, row, column);
+                cprintln(f);
+                logSyntacticError(keyword, "conj", f, row, column);
+                return;
+            }
+        }
+        else {
+            if (!keyword.equalsIgnoreCase("conj")) {
+                String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case insensitive) (%s en f:%s c:%s", keyword, row, column);
+                cprintln(f);
+                logSyntacticError(keyword, "conj", f, row, column);
+                return;
+            }
+        }
+
+        //Name is always correct? idk
+        //Correct range
+        if (rawData.contains("~")) {
+
+            if (rawData.length() != 3 /* x~y */) {
+                String f = String.format("Los grupos definidos por rango solo pueden tener 1 caracter (%s en f:%s c:%s", keyword, row, column);
+                cprintln(f);
+                logSyntacticError(keyword, "conj", f, row, column);
+                return;
+            }
+        }
+
+        //Correct list
+        if (rawData.contains(",")) {
+            boolean allOneCharacter = true;
+            for (String letter  : rawData.split(",")) {
+                if (letter.length() != 1) {
+                    allOneCharacter = false;
+                    break;
+                }
+            }
+
+            if (!allOneCharacter) {
+                String f = String.format("Los componentes divididos por lista deben tener 1 solo caracter (%s en f:%s c:%s", keyword, row, column);
+                cprintln(f);
+                logSyntacticError(keyword, "conj", f, row, column);
+                return;
+            }
+        }
+
+        //sheeeesh
+        groupList.add(new Group(name, rawData));
+    }
+
+    public static void logRegex(String name, String rawData) {
+
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        System.out.printf("name:%s(at %s-%s) rawData:%s\n", keyword, row, column, name, rawData);
+    }
+
+    public static void logRegexTest(String regexName, String str) {
+
+    }
 
     public static void logToken(String id, String lex, int row, int column) {
         tokenList.add(new Token(id, lex, row, column));
@@ -61,20 +175,29 @@ public class Main {
 
     public static void logLexicError(String lex, int row, int column) {
         lexicErrorList.add(new LexicError(lex, row, column));
-
+        cprintln(String.format("ERROR LEXICO PRODUCIDO:%s en f:%d c:%d", lex, row, column));
         //TODO logic to announce lexic error
     }
 
-    public static void logSyntacticError(String lex, String expected) {
+    public static void logSyntacticError(String lex, String expectedInternalId, String expectedElements, int row, int column) {
 
-        //TODO logic to announce syntactic error
+        System.out.println("ERROR SINTACTICO REGISTRADO");
+        System.out.printf("Token <%s> inválido, %s --> %s en f:%d row %d",
+                lex, expectedInternalId, expectedElements, row, column);
+
+        SyntacticError err = new SyntacticError("",expectedInternalId,expectedElements,row,column);
+        syntacticErrorList.add(err);
+
+        cprintln(String.format("ERROR SINTACTICO PRODUCIDO:%s en f:%d c:%d", err, row, column));
+
     }
 
 
 
 
-
-
+    public static void cprintln(Object s) {
+        mainWindow.outputTextArea.setText(mainWindow.outputTextArea.getText() + s.toString() + "\n");
+    }
 
     public static void dprint(Object s) {if (debug) {System.out.println(s);}}
 

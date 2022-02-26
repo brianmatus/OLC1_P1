@@ -28,6 +28,7 @@ public class Symbols {
   public static final int s_newline = 2;
   public static final int range_special_char = 18;
   public static final int plus_sign = 17;
+  public static final int String = 23;
   public static final int s_doublequote = 4;
   public static final int comma = 12;
   public static final int key_o = 6;
@@ -54,7 +55,8 @@ public class Symbols {
   "id",
   "word",
   "number",
-  "string"
+  "string",
+  "String"
   };
 }
 
