@@ -16,10 +16,7 @@ import java_cup.runtime.*;
 %unicode
 %ignorecase
 
-
 delimiters = [ \r\t\n]+
-
-
 
 comment = \/\/[^\r\n]*
 multicomment = "<!".*"!>"
@@ -46,15 +43,14 @@ asterisk = \*
 or_sign = \|
 plus_sign = \+
 
+//abby = ♥
+
 id = {word}({word}*{number}*)*
 
 section_separator = \%\%
 
 %%
 <YYINITIAL>{delimiters} {}
-
-
-
 
 
 <YYINITIAL>{comment} { System.out.println("Reconocio token:<comment> lexema:"+yytext());Main.logToken("comment", yytext(), yyline, yycolumn); }
@@ -82,8 +78,8 @@ section_separator = \%\%
 <YYINITIAL>{dot} {System.out.println("Reconocio token:<dot> lexema:"+yytext());Main.logToken("dot", yytext(), yyline, yycolumn);return new Symbol(Symbols.dot, yycolumn, yyline, yytext());}
 <YYINITIAL>{asterisk} {System.out.println("Reconocio token:<asterisk> lexema:"+yytext());Main.logToken("asterisk", yytext(), yyline, yycolumn);return new Symbol(Symbols.asterisk, yycolumn, yyline, yytext());}
 <YYINITIAL>{or_sign} {System.out.println("Reconocio token:<or_sign> lexema:"+yytext());Main.logToken("or_sign", yytext(), yyline, yycolumn);return new Symbol(Symbols.or_sign, yycolumn, yyline, yytext());}
+<YYINITIAL>{plus_sign} {System.out.println("Reconocio token:<plus_sign> lexema:"+yytext());Main.logToken("plus_sign", yytext(), yyline, yycolumn);return new Symbol(Symbols.plus_sign, yycolumn, yyline, yytext());}
 
 <YYINITIAL>{section_separator} {System.out.println("Reconocio token:<section_separator> lexema:"+yytext());Main.logToken("section_separator", yytext(), yyline, yycolumn);return new Symbol(Symbols.section_separator, yycolumn, yyline, yytext());}
-
 
 <YYINITIAL>. {Main.logLexicError(yytext(),yyline, yycolumn);System.out.println("Error Lexico: "+yytext()+" Linea:"+yyline+" Columna:"+yycolumn);if (Main.stopLexOnError){throw new Error("Illegal character <"+yytext()+">");}}

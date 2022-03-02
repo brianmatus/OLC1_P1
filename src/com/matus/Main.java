@@ -3,22 +3,15 @@ package com.matus;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import com.matus.analyzers.LexicAnalyzer;
 import com.matus.analyzers.SyntacticAnalyzer;
-import com.matus.elements.Group;
-import com.matus.elements.LexicError;
-import com.matus.elements.SyntacticError;
-import com.matus.elements.Token;
+import com.matus.elements.*;
 import com.matus.exceptions.InvalidCharacterException;
 import com.matus.gui.MainWindow;
 import java_cup.runtime.Symbol;
-
-import javax.swing.*;
-
+import org.w3c.dom.Node;
 
 public class Main {
 
@@ -28,7 +21,6 @@ public class Main {
 
     public static boolean stopLexOnError = true;
     public static boolean groupDefinitionIsUppercase = true;
-
 
     //Global utils
     private static final Scanner scanner = new Scanner(System.in);
@@ -44,21 +36,14 @@ public class Main {
     private static List<Group> regexList = new ArrayList<>();
     //private static List<RegexTest> regexTestList = new ArrayList<>();
 
-
     public static void main(String[] args){
 
-        mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
-        mainWindow.setVisible (true);
-        //parseExpFile();
+        logRegex("RegexPrueba1",".*.abc",0,0);
 
-        System.out.println("calma, se manejo todo");
+        //mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
         //mainWindow.setVisible (true);
+        //System.out.println("calma, se manejo todo");
     }
-
-
-
-
-
 
     //0: success
     //1: lexic error (remember to clean tables)
@@ -102,21 +87,22 @@ public class Main {
         return 0;
     }
 
+
     public static void logGroup(String keyword, String name, String rawData, int row, int column) {
 
         //Correct keyword
         if (groupDefinitionIsUppercase) {
             if (!keyword.equals("CONJ")) {
-                String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case sensitive) (%s en f:%s c:%s", keyword, row, column);
-                cprintln(f);
+                String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case sensitive) %s", keyword);
+                cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
                 return;
             }
         }
         else {
             if (!keyword.equalsIgnoreCase("conj")) {
-                String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case insensitive) (%s en f:%s c:%s", keyword, row, column);
-                cprintln(f);
+                String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case insensitive) %s", keyword);
+                cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
                 return;
             }
@@ -127,8 +113,8 @@ public class Main {
         if (rawData.contains("~")) {
 
             if (rawData.length() != 3 /* x~y */) {
-                String f = String.format("Los grupos definidos por rango solo pueden tener 1 caracter (%s en f:%s c:%s", keyword, row, column);
-                cprintln(f);
+                String f = String.format("Los elementos de un grupos definidos por rango solo pueden tener 1 caracter %s", keyword);
+                cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
                 return;
             }
@@ -145,8 +131,8 @@ public class Main {
             }
 
             if (!allOneCharacter) {
-                String f = String.format("Los componentes divididos por lista deben tener 1 solo caracter (%s en f:%s c:%s", keyword, row, column);
-                cprintln(f);
+                String f = String.format("Los elementos de un grupo definidos por lista solo pueden tener 1 caracter %s", keyword);
+                cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
                 return;
             }
@@ -156,13 +142,316 @@ public class Main {
         groupList.add(new Group(name, rawData));
     }
 
-    public static void logRegex(String name, String rawData) {
 
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.printf("name:%s(at %s-%s) rawData:%s\n", keyword, row, column, name, rawData);
+    public static void logRegex(String name, String rawData, int row, int column) {
+
+        String graphvizString = "digraph {\nnodesep=3;\n";
+
+        int nodesCreated = 0;
+
+        rawData = ".<->+<->a<->+<->b"; //TODO please delete this lmao
+        //rawData = ".<->{letra}<->*<->|<->\"_\"<->|<->{letra}<->{digito}"; //TODO please delete this lmao
+        //rawData = ".<->{digito}<->.<->\".\"<->+<->{digito}"; //TODO please delete this lmao
+        //rawData = ".<->{digito}<->*<->|<->\"_\"<->{letra}<->{digito}"; //TODO please delete this lmao
+        //Parse this baby
+
+        List<String> tmpList = new ArrayList<>(); //for separating elements into chars (except previous groups and special chars)
+
+        NodeTree head;
+        Stack<NodeTree> stack = new Stack<>(); //parsed elements go here
+
+        List<NodeTree> leafList = new ArrayList<>();
+
+        String[] _arr = rawData.split("<->");
+
+
+        for (String s : _arr) {
+            if (s.contains("{") | s.contains("\"")) {
+                //System.out.println("Skipping separation of group:" + s);
+                tmpList.add(s);
+                continue;
+            }
+
+            //If id element (multiple single elements concatenated):
+            for (int j = 0; j < s.length(); j++) {
+                tmpList.add(s.substring(j, j + 1));
+            }
+        }
+
+        dprint("Before expansion:");
+        dprint(tmpList);
+        //Expansion of + and ?
+        tmpList = specialOperatorsExpansion(new ArrayList<>(tmpList)); //before stuff goes wild
+        dprint("After expansion:");
+        dprint(tmpList);
+
+
+        for (int i = tmpList.size()-1; i >= 0 ; i--) { //Reverse loop array
+            String s = tmpList.get(i);
+            System.out.println("Now analyzing " + s);
+            System.out.println("Current stack is" + stack);
+            switch (s) {
+                case "." -> {
+
+                    //stack underflow
+                    if (stack.size() < 2) {
+                        String f = String.format("Expresión REGEX invalida (operación . definida sin elementos previos): %s", rawData);
+                        cprintln(String.format("%s (f:%s c:%s)", f, row, column));
+                        logSyntacticError(rawData, "conj", f, row, column);
+                        return;
+                    }
+                    NodeTree a = stack.pop();
+                    NodeTree b = stack.pop();
+
+                    NodeTree parent = new NodeTree();
+
+                    parent.label = ".";
+                    parent.orderInTree = nodesCreated;
+
+                    parent.number = "";
+                    parent.leftChildren = a;
+                    a.parent = parent;
+                    parent.rightChildren = b;
+                    b.parent = parent;
+
+                    //Nullable
+                    parent.nullable = a.nullable && b.nullable;
+
+                    //First Pos
+                    if (a.nullable) parent.firstPos = removeStringListDuplicates(a.firstPos + "," + b.firstPos);
+                    else parent.firstPos = a.firstPos;
+
+                    //Last Pos
+                    if (b.nullable) parent.lastPos = removeStringListDuplicates(a.lastPos + "," + b.lastPos);
+                    else parent.lastPos = b.lastPos;
+                    stack.add(parent); // (a operand b)
+
+                    //Graphviz
+
+                    graphvizString += String.format(
+                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
+                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
+                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
+                            , nodesCreated, parent.nullable? "V":"F", parent.firstPos, centerString(parent.label,16), parent.lastPos, " ");
+
+
+                    graphvizString += String.format("\"node-%s\" -> \"node-%s\" \n \"node-%s\" -> \"node-%s\"\n",nodesCreated, a.orderInTree, nodesCreated, b.orderInTree);
+                    nodesCreated++;
+                }
+
+                case "|" -> {
+                    //stack underflow
+                    if (stack.size() < 2) {
+                        String f = String.format("Expresión REGEX invalida (operación | definida sin elementos previos): %s", rawData);
+                        cprintln(String.format("%s (f:%s c:%s)", f, row, column));
+                        logSyntacticError(rawData, "conj", f, row, column);
+                        return;
+                    }
+                    NodeTree a = stack.pop();
+                    NodeTree b = stack.pop();
+
+                    NodeTree parent = new NodeTree();
+
+                    parent.label = "|";
+                    parent.orderInTree = nodesCreated;
+
+                    parent.number = "";
+                    parent.leftChildren = a;
+                    a.parent = parent;
+                    parent.rightChildren = b;
+                    b.parent = parent;
+
+                    //Nullable
+                    parent.nullable = a.nullable || b.nullable;
+
+                    //First Pos
+                    if (a.nullable) parent.firstPos = removeStringListDuplicates(a.firstPos + "," + b.firstPos);
+                    else parent.firstPos = a.firstPos;
+
+                    //Last Pos
+                    if (b.nullable) parent.lastPos = removeStringListDuplicates(a.lastPos + "," + b.lastPos);
+                    else parent.lastPos = b.lastPos;
+                    stack.add(parent); // (a operand b)
+
+
+                    graphvizString += String.format(
+                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
+                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
+                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
+                            , nodesCreated, parent.nullable? "V":"F", parent.firstPos, centerString(parent.label,16), parent.lastPos, " ");
+
+
+                    //Graphviz
+                    graphvizString += String.format("\"node-%s\" -> \"node-%s\" \n \"node-%s\" -> \"node-%s\"\n",nodesCreated, a.orderInTree, nodesCreated, b.orderInTree);
+                    nodesCreated++;
+                }
+
+                case "*" -> {
+                    if (stack.size() < 1) {
+                        String f = String.format("Expresión REGEX invalida (operación * definida sin elemento previo): %s", rawData);
+                        cprintln(String.format("%s (f:%s c:%s)", f, row, column));
+                        logSyntacticError(rawData, "conj", f, row, column);
+                        return;
+                    }
+                    NodeTree a = stack.pop();
+                    NodeTree parent = new NodeTree();
+
+                    parent.label = "*";
+                    parent.orderInTree = nodesCreated;
+
+                    parent.number = "";
+                    parent.leftChildren = a;
+                    a.parent = parent;
+
+                    //Nullable
+                    parent.nullable = true;
+
+                    //First Pos
+                    parent.firstPos = a.firstPos;
+
+                    //Last Pos
+                    parent.lastPos = a.lastPos;
+
+                    stack.add(parent); // (a operand b)
+
+                    //Graphviz
+                    graphvizString += String.format(
+                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
+                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
+                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
+                            , nodesCreated, "V", parent.firstPos, centerString(parent.label,16), parent.lastPos, " ");
+
+                    graphvizString += String.format("\"node-%s\" -> \"node-%s\"[dir=none]\n",nodesCreated, a.orderInTree);
+
+                    dprint("Stack after * insertion:");
+                    dprint(stack);
+                    nodesCreated++;
+                }
+
+                // + and ? are expanded in specialOperatorsExpansion() before this loop.
+
+
+                default -> { //Leaf
+                    dprint("Leaf encountered with " + s);
+                    int leafCount = leafList.size() + 1;
+                    //(String label, String firstPos, String lastPos, boolean nullable, int number, boolean isEpsilon)
+                    boolean nullable = s.equals("{epsilon}");
+                    NodeTree theNode = new NodeTree(s,Integer.toString(leafCount), Integer.toString(leafCount), nullable, Integer.toString(leafCount), s.equals("epsilon"), nodesCreated);
+                    leafList.add(theNode);
+                    System.out.println("adding to stack"); //TODO delete me
+                    stack.add(theNode);
+                    //Graphviz
+                    graphvizString += String.format(
+                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
+                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
+                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
+                            , nodesCreated, nullable? "V":"F", leafCount, centerString(s,14), leafCount, leafCount);
+                    nodesCreated++;
+
+
+
+                }
+
+            }
+
+            dprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            dprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            dprint(graphvizString + "\n}");
+
+        }
+
+        graphvizString += "\n}";
+
+
+        //TODO Add # node and root(.)
+        System.out.println("RESULTADO:" + stack.peek().label);
+        System.out.println(stack.size()); //TODO this should always be 1, else syntactic error
+
+        if (stack.size() != 1) {
+            String f = String.format("Expresión REGEX invalida (mas operandos que operaciones): %s", rawData);
+            cprintln(String.format("%s (f:%s c:%s)", f, row, column));
+            logSyntacticError(rawData, "conj", f, row, column);
+            return;
+        }
+
+
+        head = stack.peek();
+
     }
+
+
+
+    public static List<String> specialOperatorsExpansion(List<String> list) {
+
+
+        boolean chainWasUpdated = true;
+
+        //This can be done more efficiently by having a lastKnownExpansionIndex to skip elements
+        expansion: while (chainWasUpdated) {
+            chainWasUpdated = false;
+
+           for (int i = 0; i < list.size(); i++) {
+                String s = list.get(i);
+
+                //Converting +[expr] to .*[expr][expr]
+                //length of [expr] is determined by number of .| before encountering a operand (+ one)
+                if (s.equals("+")) {
+                    dprint("Encountered +, expanding....");
+                    chainWasUpdated = true;
+                    int _i = i+1;
+                    int count = 1; //for including exclusive 2nd index of sublist
+                    while (count > 0) {
+                        if (list.get(_i).equals(".") || list.get(_i).equals("|")) {
+                            count++;
+                        }
+                        else {
+                            count--;
+                        }
+                        _i++;
+                    }
+
+                    List<String> result = new ArrayList<>(list.subList(0,i)); //stuff before
+                    result.add("."); result.add("*"); //expansion
+                    result.addAll(list.subList(i+1,_i)); // elements included in expansion
+                    result.addAll(list.subList(i+1,list.size())); // stuff after
+                    list = result; //Another list should be necessary here? idk.
+                    continue expansion;
+                }
+
+                //Converting ?[expr] to |[expr]{epsilon}
+                //length of [expr] is determined by number of .| before encountering a operand (+ one)
+                if (s.equals("?")) {
+                    dprint("Encountered ?, expanding....");
+                    chainWasUpdated = true;
+                    int _i = i+1;
+                    int count = 1; //for including exclusive 2nd index of sublist
+                    while (count > 0) {
+                        if (list.get(_i).equals(".") || list.get(_i).equals("|")) {
+                            count++;
+                        }
+                        else {
+                            count--;
+                        }
+                        _i++;
+                    }
+                    List<String> result = list.subList(0,i); //stuff before
+                    result.add("|"); //expansion
+                    result.addAll(list.subList(i+1,_i)); // elements included in expansion
+                    result.add("{epsilon}"); //expansion
+                    result.addAll(list.subList(_i,list.size())); // stuff after
+                    list = result;
+                    continue expansion;
+                }
+            }
+        }
+
+        return list;
+
+    }
+
+
+
+
 
     public static void logRegexTest(String regexName, String str) {
 
@@ -189,11 +478,30 @@ public class Main {
         syntacticErrorList.add(err);
 
         cprintln(String.format("ERROR SINTACTICO PRODUCIDO:%s en f:%d c:%d", err, row, column));
-
     }
 
 
+    public static String removeStringListDuplicates(String list) {
+        ArrayList<String> newList = new ArrayList<>();
+        for (String element : list.split(",")) {
+            if (!newList.contains(element)) {
+                newList.add(element);
+            }
+        }
+        return String.join(",", newList);
+    }
 
+    public static String padRight(String s, int n) {
+        return String.format("%-" + n + "s", s);
+    }
+
+    public static String padLeft(String s, int n) {
+        return String.format("%" + n + "s", s);
+    }
+
+    public static String centerString (String s, int n) {
+        return String.format("%-" + n  + "s", String.format("%" + (s.length() + (n - s.length()) / 2) + "s", s));
+    }
 
     public static void cprintln(Object s) {
         mainWindow.outputTextArea.setText(mainWindow.outputTextArea.getText() + s.toString() + "\n");

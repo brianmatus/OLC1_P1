@@ -4,7 +4,6 @@ import com.matus.elements.Token;
 import com.matus.Main;
 import com.matus.elements.SyntacticError;
 
-
 //terminal delimiters;
 //terminal String comment, multicomment;
 terminal String s_newline;
@@ -13,28 +12,20 @@ terminal String dot, asterisk, or_sign, plus_sign;
 terminal String range_special_char;
 terminal String id, word, number, string;
 
-non terminal String INICIO, E_PART1, E_PART2;
+non terminal String Abby, E_PART1, E_PART2;
 non terminal String E_SET_DEFINITION, E_REGEX_DEFINITION, E_EXPR_TESTING;
 non terminal String E_RANGE_VALUE, E_RANGE_ELEMENT, E_RANGE_LIST;
 non terminal String E_REGEX_VALUE, E_REGEX_ELEMENT;
 terminal error String;
 
+start with Abby; //TODO INICIO
 
-//Ejemplo
-non terminal String EJEMPLO;
-
-
-//Fin Ejemplo
-start with INICIO; //TODO INICIO
-
-
-INICIO::= key_o:a E_PART1:b section_separator:c E_PART2:d key_c:e {: System.out.println("Sintactico terminado");  RESULT = a+b+c+d+e; :};
+Abby::= key_o:a E_PART1:b section_separator:c E_PART2:d key_c:e {: System.out.println("Sintactico terminado");  RESULT = a+b+c+d+e; :};
 
 E_PART1::=  E_PART1 E_SET_DEFINITION:d {: System.out.println("Grupo definido!:" + d); :}
     |E_SET_DEFINITION:d {: System.out.println("ultimo Regex definido!:" + d); :}
     |E_PART1 E_REGEX_DEFINITION:d {: System.out.println("Regex definido!:" + d); :}
     |E_REGEX_DEFINITION:d {: System.out.println("ultimo Regex definido!:" + d); :};
-
 
 //SET DEFINITIONS
 E_SET_DEFINITION::= id:w1 colon id:w2 score morethan E_RANGE_VALUE:val semicolon {: Main.logGroup(w1,w2,val, w1right,w1left);   RESULT =  w1 + "<->" + w2 + "<->" + val;  :}
@@ -60,7 +51,7 @@ E_RANGE_ELEMENT::= id:a {: RESULT =  a;:}
     |error:a {: Main.logSyntacticError("","range_element","se esperaba id|number|special_char|\"|\"|+|.",aright,aleft); report_fatal_error("", null);:}; //TODO agregar literales
 
 //REGEX DEFINITIONS
-E_REGEX_DEFINITION::= id:name score morethan E_REGEX_VALUE:val semicolon{:   Main.logRegex(name,val);  RESULT = name + "<->" + val;  :};
+E_REGEX_DEFINITION::= id:name score morethan E_REGEX_VALUE:val semicolon{:   Main.logRegex(name,val, valright, valleft);  RESULT = name + "<->" + val;  :};
 
 E_REGEX_VALUE::= E_REGEX_VALUE:a E_REGEX_ELEMENT:b {: RESULT = a + "<->" + b; :}
     |E_REGEX_ELEMENT:a {: RESULT = a; :};
@@ -72,14 +63,11 @@ E_REGEX_ELEMENT::= dot:a {: RESULT =  a;:}
     |string:a {: RESULT =  a;:}
     |number:a {: RESULT =  a;:}
     |plus_sign:a {: RESULT =  a;:}
-    |error:a {: Main.logSyntacticError("","regex_element","se esperaba id|*|+|\"|\"|string|number|+",aright,aleft); report_fatal_error("", null);:};
+    |key_o id:a key_c  {: RESULT =  "{" + a + "}";:}
+    |error:a {: Main.logSyntacticError("","regex_element","se esperaba id|*|+|\"|\"|string|number|+|{conjunto}",aright,aleft); report_fatal_error("", null);:};
 
 ////////////////////
 E_PART2::= E_EXPR_TESTING:a semicolon E_PART2 {: RESULT = a;:}
     | E_EXPR_TESTING:a semicolon{: RESULT = a;:};
 
 E_EXPR_TESTING::= id:name colon string:rgx {:Main.logRegexTest(name,rgx); RESULT = name + "<->" + rgx; :};
-
-
-//TODO: Implement syntactic error logging (programs defaults to exception, so not necessary to implement that)
-//

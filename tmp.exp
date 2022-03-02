@@ -1,15 +1,26 @@
 {
-ExpReg1 -> a ;
-ExpReg1 -> b ;
-ExpReg1 -> c ;
-CONJ: uwu -> 5~z ;
-CONJ: uwu -> 5~z ;
+	<!   Este es un 
+	comentario de 
+	muchas lineas
+	!>
 
-//a
-//aa xd xdxd
-<! ola !>
-%%
-Test1: "equisdexD  ";
-//TEst2: " .test2jaja";
+	//este comentario es de una linea
+
+    //definicion de conjuntos
+	CONJ:grupo_1 -> 7~8;
+
+    //definicion de expresiones regulares
+	
+	expre2->."a"."a"+{grupo_1};
+	
+	%%
+	%%
+    
+    //ahora toca evaluar las cadenas
+
+	expre2:"aa788787";  //esta cadena es CORRECTA
+    expre2:"aa"; //esta cadena es INCORRECTA  
+    expre2:"aazbbb"; <! esta cadena es INCORRECTA !>
+	
 
 }

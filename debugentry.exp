@@ -1,5 +1,5 @@
 {
-ExpReg1 -> a ;
+ExpReg1 -> a+b ;
 ExpReg1 -> b ;
 ExpReg1 -> c ;
 CONJ: uwu -> 5~z ;
