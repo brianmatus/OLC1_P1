@@ -11,7 +11,6 @@ import com.matus.elements.*;
 import com.matus.exceptions.InvalidCharacterException;
 import com.matus.gui.MainWindow;
 import java_cup.runtime.Symbol;
-import org.w3c.dom.Node;
 
 public class Main {
 
@@ -39,6 +38,7 @@ public class Main {
     public static void main(String[] args){
 
         logRegex("RegexPrueba1",".*.abc",0,0);
+
 
         //mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
         //mainWindow.setVisible (true);
@@ -145,6 +145,9 @@ public class Main {
 
     public static void logRegex(String name, String rawData, int row, int column) {
 
+
+        RegexExpression regexExp = new RegexExpression(name, rawData);
+
         String graphvizString = "digraph {\nnodesep=3;\n";
 
         int nodesCreated = 0;
@@ -157,11 +160,12 @@ public class Main {
 
         List<String> tmpList = new ArrayList<>(); //for separating elements into chars (except previous groups and special chars)
 
-        NodeTree head;
         Stack<NodeTree> stack = new Stack<>(); //parsed elements go here
 
         List<NodeTree> leafList = new ArrayList<>();
+        regexExp.leaves = leafList;
 
+        rawData = ".<->#<->" + rawData;
         String[] _arr = rawData.split("<->");
 
 
@@ -237,8 +241,8 @@ public class Main {
 
                     graphvizString += String.format("\"node-%s\" -> \"node-%s\" \n \"node-%s\" -> \"node-%s\"\n",nodesCreated, a.orderInTree, nodesCreated, b.orderInTree);
                     nodesCreated++;
-                }
 
+                }
                 case "|" -> {
                     //stack underflow
                     if (stack.size() < 2) {
@@ -330,7 +334,6 @@ public class Main {
 
                 // + and ? are expanded in specialOperatorsExpansion() before this loop.
 
-
                 default -> { //Leaf
                     dprint("Leaf encountered with " + s);
                     int leafCount = leafList.size() + 1;
@@ -348,8 +351,7 @@ public class Main {
                             , nodesCreated, nullable? "V":"F", leafCount, centerString(s,14), leafCount, leafCount);
                     nodesCreated++;
 
-
-
+                    regexExp.nextTable.add(new String[]{});
                 }
 
             }
@@ -361,9 +363,9 @@ public class Main {
         }
 
         graphvizString += "\n}";
+        regexExp.afd_graphviz = graphvizString;
 
 
-        //TODO Add # node and root(.)
         System.out.println("RESULTADO:" + stack.peek().label);
         System.out.println(stack.size()); //TODO this should always be 1, else syntactic error
 
@@ -373,9 +375,7 @@ public class Main {
             logSyntacticError(rawData, "conj", f, row, column);
             return;
         }
-
-
-        head = stack.peek();
+        regexExp.treeHead = stack.peek();
 
     }
 

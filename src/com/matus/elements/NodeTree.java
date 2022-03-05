@@ -32,6 +32,11 @@ public class NodeTree {
     }
 
 
+
+    public void addNext(int n) {
+
+    }
+
     @Override
     public String toString() {
         return label + orderInTree;
