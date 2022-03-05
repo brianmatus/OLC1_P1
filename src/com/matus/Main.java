@@ -230,6 +230,19 @@ public class Main {
                     else parent.lastPos = b.lastPos;
                     stack.add(parent); // (a operand b)
 
+
+
+                    //AFD Tree method next table
+                    for (String ultPosC1 : a.lastPos.split(",")) {
+                        for (String primPosC2 : b.firstPos.split(",")) {
+                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
+                            regexExp.nextTable.set(Integer.parseInt(ultPosC1), prev + "," + primPosC2);
+                        }
+                        //Remove duplicates
+                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
+                        regexExp.nextTable.set(Integer.parseInt(ultPosC1),removeStringListDuplicates(f));
+                    }
+
                     //Graphviz
 
                     graphvizString += String.format(
@@ -318,6 +331,20 @@ public class Main {
 
                     stack.add(parent); // (a operand b)
 
+
+                    //AFD Tree method next table
+                    for (String ultPosC1 : a.lastPos.split(",")) {
+                        for (String primPosC2 : a.firstPos.split(",")) {
+                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
+                            regexExp.nextTable.set(Integer.parseInt(ultPosC1), prev + "," + primPosC2);
+                        }
+                        //Remove duplicates
+                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
+                        regexExp.nextTable.set(Integer.parseInt(ultPosC1),removeStringListDuplicates(f));
+                    }
+
+
+
                     //Graphviz
                     graphvizString += String.format(
                             "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
@@ -351,7 +378,7 @@ public class Main {
                             , nodesCreated, nullable? "V":"F", leafCount, centerString(s,14), leafCount, leafCount);
                     nodesCreated++;
 
-                    regexExp.nextTable.add(new String[]{});
+                    regexExp.nextTable.add("");
                 }
 
             }
@@ -363,7 +390,7 @@ public class Main {
         }
 
         graphvizString += "\n}";
-        regexExp.afd_graphviz = graphvizString;
+        regexExp.afd_tree_graphviz = graphvizString;
 
 
         System.out.println("RESULTADO:" + stack.peek().label);
@@ -378,6 +405,37 @@ public class Main {
         regexExp.treeHead = stack.peek();
 
     }
+
+
+
+    public void generateAFD(RegexExpression regex) {
+
+        List<AFDNode> nodeList = new ArrayList<>();
+        AFDNode node0 = new AFDNode(0);
+        nodeList.add(node0);
+
+
+        boolean newGroupCreated = true;
+        int nextGroupToAnalyze = 0;
+
+        while (nextGroupToAnalyze != nodeList.size()) {
+            nextGroupToAnalyze++;
+            //TODO do transition analysis
+        }
+
+
+    }
+
+
+
+    
+
+
+
+
+
+
+
 
 
 

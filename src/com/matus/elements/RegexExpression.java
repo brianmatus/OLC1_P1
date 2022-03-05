@@ -1,5 +1,6 @@
 package com.matus.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RegexExpression {
@@ -10,15 +11,20 @@ public class RegexExpression {
     public NodeTree treeHead;
 
     public List<NodeTree> leaves;
-    public List<String[]> nextTable;
+    public List<String> nextTable;
 
-    public String afd_graphviz;
+    public String afd_tree_graphviz;
+    public List<AFDNode> afd_tree;
 
 
     public RegexExpression(String name, String pattern) {
         this.name = name;
         this.pattern = pattern;
+        this.nextTable = new ArrayList<>();
     }
+
+
+    public RegexExpression() {}
 
 
 }
