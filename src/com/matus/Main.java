@@ -144,14 +144,9 @@ public class Main {
 
 
     public static void logRegex(String name, String rawData, int row, int column) {
-
-
         RegexExpression regexExp = new RegexExpression(name, rawData);
-
         String graphvizString = "digraph {\nnodesep=3;\n";
-
         int nodesCreated = 0;
-
         rawData = ".<->+<->a<->+<->b"; //TODO please delete this lmao
         //rawData = ".<->{letra}<->*<->|<->\"_\"<->|<->{letra}<->{digito}"; //TODO please delete this lmao
         //rawData = ".<->{digito}<->.<->\".\"<->+<->{digito}"; //TODO please delete this lmao
@@ -163,9 +158,9 @@ public class Main {
         Stack<NodeTree> stack = new Stack<>(); //parsed elements go here
 
         List<NodeTree> leafList = new ArrayList<>();
-        regexExp.leaves = leafList;
+        regexExp.leavesList = leafList;
 
-        rawData = ".<->#<->" + rawData;
+        rawData = ".<->" + rawData + "<->#";
         String[] _arr = rawData.split("<->");
 
 
@@ -175,7 +170,6 @@ public class Main {
                 tmpList.add(s);
                 continue;
             }
-
             //If id element (multiple single elements concatenated):
             for (int j = 0; j < s.length(); j++) {
                 tmpList.add(s.substring(j, j + 1));
@@ -189,14 +183,12 @@ public class Main {
         dprint("After expansion:");
         dprint(tmpList);
 
-
         for (int i = tmpList.size()-1; i >= 0 ; i--) { //Reverse loop array
             String s = tmpList.get(i);
             System.out.println("Now analyzing " + s);
             System.out.println("Current stack is" + stack);
             switch (s) {
                 case "." -> {
-
                     //stack underflow
                     if (stack.size() < 2) {
                         String f = String.format("Expresión REGEX invalida (operación . definida sin elementos previos): %s", rawData);
@@ -204,6 +196,7 @@ public class Main {
                         logSyntacticError(rawData, "conj", f, row, column);
                         return;
                     }
+
                     NodeTree a = stack.pop();
                     NodeTree b = stack.pop();
 
@@ -222,25 +215,34 @@ public class Main {
                     parent.nullable = a.nullable && b.nullable;
 
                     //First Pos
-                    if (a.nullable) parent.firstPos = removeStringListDuplicates(a.firstPos + "," + b.firstPos);
+                    if (a.nullable) parent.firstPos = orderStringArray(removeStringListDuplicates(a.firstPos + "," + b.firstPos));
                     else parent.firstPos = a.firstPos;
 
                     //Last Pos
-                    if (b.nullable) parent.lastPos = removeStringListDuplicates(a.lastPos + "," + b.lastPos);
+                    if (b.nullable) parent.lastPos = orderStringArray(removeStringListDuplicates(a.lastPos + "," + b.lastPos));
                     else parent.lastPos = b.lastPos;
                     stack.add(parent); // (a operand b)
 
-
-
                     //AFD Tree method next table
+                    System.out.println("adding next for");
+                    System.out.println(a.lastPos);
+                    System.out.println(b.firstPos);
                     for (String ultPosC1 : a.lastPos.split(",")) {
                         for (String primPosC2 : b.firstPos.split(",")) {
-                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
-                            regexExp.nextTable.set(Integer.parseInt(ultPosC1), prev + "," + primPosC2);
+
+                            System.out.printf("A ultposc1:%s le sigue primposc2:%s\n",ultPosC1, primPosC2);
+
+                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
+                            String f = "";
+                            if (!prev.equals("")) f = prev + ",";
+                            f += primPosC2;
+                            regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1, f);
                         }
-                        //Remove duplicates
-                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
-                        regexExp.nextTable.set(Integer.parseInt(ultPosC1),removeStringListDuplicates(f));
+                        //Remove duplicates and sort
+                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
+                        f = removeStringListDuplicates(f);
+                        f = orderStringArray(f);
+                        regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1,f);
                     }
 
                     //Graphviz
@@ -252,7 +254,7 @@ public class Main {
                             , nodesCreated, parent.nullable? "V":"F", parent.firstPos, centerString(parent.label,16), parent.lastPos, " ");
 
 
-                    graphvizString += String.format("\"node-%s\" -> \"node-%s\" \n \"node-%s\" -> \"node-%s\"\n",nodesCreated, a.orderInTree, nodesCreated, b.orderInTree);
+                    graphvizString += String.format("\"node-%s\" -> \"node-%s\" \n \"node-%s\" -> \"node-%s\"\n",nodesCreated, b.orderInTree, nodesCreated, a.orderInTree);
                     nodesCreated++;
 
                 }
@@ -322,28 +324,34 @@ public class Main {
 
                     //Nullable
                     parent.nullable = true;
-
                     //First Pos
                     parent.firstPos = a.firstPos;
-
                     //Last Pos
                     parent.lastPos = a.lastPos;
-
                     stack.add(parent); // (a operand b)
 
 
+                    System.out.println("Element for next table:");
+                    System.out.println(Arrays.toString(a.lastPos.split(",")));
+                    System.out.println(Arrays.toString(a.firstPos.split(",")));
+
                     //AFD Tree method next table
                     for (String ultPosC1 : a.lastPos.split(",")) {
-                        for (String primPosC2 : a.firstPos.split(",")) {
-                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
-                            regexExp.nextTable.set(Integer.parseInt(ultPosC1), prev + "," + primPosC2);
+                        for (String primPosC1 : a.firstPos.split(",")) {
+                            System.out.printf("A ultposc1:%s le sigue primposc1:%s\n",ultPosC1, primPosC1);
+                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
+                            String f = "";
+                            if (!prev.equals("")) f = prev + ",";
+                            f += primPosC1;
+                            regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1, f);
                         }
                         //Remove duplicates
-                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1));
-                        regexExp.nextTable.set(Integer.parseInt(ultPosC1),removeStringListDuplicates(f));
+                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
+                        f = removeStringListDuplicates(f);
+                        System.out.println("Before call for removing dups");
+                        System.out.println(f);
+                        regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1,f);
                     }
-
-
 
                     //Graphviz
                     graphvizString += String.format(
@@ -353,9 +361,6 @@ public class Main {
                             , nodesCreated, "V", parent.firstPos, centerString(parent.label,16), parent.lastPos, " ");
 
                     graphvizString += String.format("\"node-%s\" -> \"node-%s\"[dir=none]\n",nodesCreated, a.orderInTree);
-
-                    dprint("Stack after * insertion:");
-                    dprint(stack);
                     nodesCreated++;
                 }
 
@@ -380,63 +385,68 @@ public class Main {
 
                     regexExp.nextTable.add("");
                 }
-
             }
-
             dprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             dprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             dprint(graphvizString + "\n}");
-
         }
 
         graphvizString += "\n}";
         regexExp.afd_tree_graphviz = graphvizString;
 
-
         System.out.println("RESULTADO:" + stack.peek().label);
-        System.out.println(stack.size()); //TODO this should always be 1, else syntactic error
+        System.out.println(stack.size());
 
-        if (stack.size() != 1) {
+        if (stack.size() != 1) {//TODO this should always be 1
             String f = String.format("Expresión REGEX invalida (mas operandos que operaciones): %s", rawData);
             cprintln(String.format("%s (f:%s c:%s)", f, row, column));
             logSyntacticError(rawData, "conj", f, row, column);
             return;
         }
         regexExp.treeHead = stack.peek();
-
+        regexExp.afd_tree = generateAFD(regexExp);
     }
 
+    public static List<AFDNode> generateAFD(RegexExpression regex) {
 
-
-    public void generateAFD(RegexExpression regex) {
+        System.out.println("Generating AFD for:");
+        System.out.println("###################################################");
+        System.out.println("HEAD First Pos");
+        System.out.println(regex.treeHead.firstPos);
+        System.out.println("###################################################");
+        System.out.println("Next Table");
+        for (int i = 0; i < regex.nextTable.size(); i++) {
+            System.out.printf("%s: %s\n",regex.leavesList.get(i).label,regex.nextTable.get(i));
+        }
+        System.out.println(regex.nextTable);
+        System.out.println("###################################################");
+        System.out.println("Leaves");
+        System.out.println(regex.leavesList);
 
         List<AFDNode> nodeList = new ArrayList<>();
         AFDNode node0 = new AFDNode(0);
         nodeList.add(node0);
 
-
-        boolean newGroupCreated = true;
         int nextGroupToAnalyze = 0;
-
         while (nextGroupToAnalyze != nodeList.size()) {
+
+
+            //Make a list (elementsList) with all elements in this group
+
+            //Make a string that will contain a list
+            //Iterate all elements in group and join same-char parts (be sure to check for nulls) (remove from elementsList all elements involved)
+            //Remove dups and order
+
+            //Iterate nodeList to check if group already exist. If not, create one and insert it in nodeList
+            //add transition to current AFDNode
+
             nextGroupToAnalyze++;
-            //TODO do transition analysis
+
         }
 
+        return nodeList;
 
     }
-
-
-
-    
-
-
-
-
-
-
-
-
 
 
     public static List<String> specialOperatorsExpansion(List<String> list) {
@@ -502,14 +512,8 @@ public class Main {
                 }
             }
         }
-
         return list;
-
     }
-
-
-
-
 
     public static void logRegexTest(String regexName, String str) {
 
@@ -519,22 +523,16 @@ public class Main {
         tokenList.add(new Token(id, lex, row, column));
     }
 
-
     public static void logLexicError(String lex, int row, int column) {
         lexicErrorList.add(new LexicError(lex, row, column));
         cprintln(String.format("ERROR LEXICO PRODUCIDO:%s en f:%d c:%d", lex, row, column));
-        //TODO logic to announce lexic error
     }
 
     public static void logSyntacticError(String lex, String expectedInternalId, String expectedElements, int row, int column) {
-
-        System.out.println("ERROR SINTACTICO REGISTRADO");
         System.out.printf("Token <%s> inválido, %s --> %s en f:%d row %d",
                 lex, expectedInternalId, expectedElements, row, column);
-
         SyntacticError err = new SyntacticError("",expectedInternalId,expectedElements,row,column);
         syntacticErrorList.add(err);
-
         cprintln(String.format("ERROR SINTACTICO PRODUCIDO:%s en f:%d c:%d", err, row, column));
     }
 
@@ -546,8 +544,27 @@ public class Main {
                 newList.add(element);
             }
         }
-        return String.join(",", newList);
+        String f = String.join(",", newList);
+        return f;
     }
+
+
+    public static String orderStringArray(String str) {
+
+        String[] arr = str.split(",");
+        int[] intArr = new int[arr.length];
+
+        for (int i = 0; i < arr.length; i++) {
+            intArr[i] = Integer.parseInt(arr[i]);
+        }
+        Arrays.sort(intArr);
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = Integer.toString(intArr[i]);
+        }
+        String f = String.join(",", arr);
+        return f;
+    }
+
 
     public static String padRight(String s, int n) {
         return String.format("%-" + n + "s", s);

@@ -10,12 +10,11 @@ public class RegexExpression {
 
     public NodeTree treeHead;
 
-    public List<NodeTree> leaves;
+    public List<NodeTree> leavesList;
     public List<String> nextTable;
 
     public String afd_tree_graphviz;
     public List<AFDNode> afd_tree;
-
 
     public RegexExpression(String name, String pattern) {
         this.name = name;
