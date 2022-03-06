@@ -24,7 +24,7 @@ public class Generator {
         RegexExpression regexExp = new RegexExpression(name, rawData);
         String graphvizString = "digraph {\nnodesep=3;\n";
         int nodesCreated = 0;
-        rawData = ".<->+<->a<->+<->b"; //TODO please delete this lmao
+        rawData = ".<->.<->+<->a<->+<->b<->+<->c"; //TODO please delete this lmao
         //rawData = ".<->{letra}<->*<->|<->\"_\"<->|<->{letra}<->{digito}"; //TODO please delete this lmao
         //rawData = ".<->{digito}<->.<->\".\"<->+<->{digito}"; //TODO please delete this lmao
         //rawData = ".<->{digito}<->*<->|<->\"_\"<->{letra}<->{digito}"; //TODO please delete this lmao
@@ -315,23 +315,68 @@ public class Generator {
             //Make a list (elementsList) with all elements in this group
             List<String> elementList = new ArrayList<>(nodeList.get(nextGroupToAnalyze).belongingElements);
 
-            //System.out.println("Now analyzing transitions for ");
+            System.out.println(".............................................................................");
+            System.out.printf("Now analyzing transitions for S%d->%s\n", nextGroupToAnalyze, elementList);
+            System.out.printf("#Elements to analyze:%s\n", elementList.size());
 
             //Iterate all elements in group and join same-char parts (be sure to check for nulls) (remove from elementsList all elements involved)
             while (elementList.size() != 0) {
-                List<String> sameElements = new ArrayList<>(Arrays.asList(elementList.get(0)));
-                //Remove dups and order
 
+                //If element has no nexts (idk why an empty string is being added here, so had to check
+                if (elementList.get(0).equals("")) {
+                    elementList.remove(0);
+                    continue;
+                }
+
+                List<String> sameElements = new ArrayList<>(Arrays.asList(elementList.get(0)));
+                List<Integer> foundSameIndexes = new ArrayList<>();
+                //foundSameIndexes.add(0);
+                //Remove dups and order
                 String firstRepresent = regex.leavesList.get(Integer.parseInt(elementList.get(0))-1).label;
+                System.out.println("Representation to match:" + firstRepresent);
+
+
+                if (firstRepresent.equals("#")) {
+                    nodeList.get(nextGroupToAnalyze).isAcceptState = true;
+                    elementList.remove(0);
+                    continue;
+                }
+
+
                 for (int i = 0; i < elementList.size(); i++) {
                     String next = elementList.get(i);
                     String represents = regex.leavesList.get(Integer.parseInt(next)-1).label;
                     System.out.printf("%s: has element %s\n",next, represents);
                     //First is always already grabbed
                     if (Objects.equals(represents, firstRepresent)) {
+                        System.out.println("same representation!");
+                        System.out.println(represents);
+                        System.out.println(firstRepresent);
+                        System.out.println("before adding");
+                        System.out.println(sameElements);
+                        System.out.println("after adding");
                         sameElements.add(next);
+                        foundSameIndexes.add(i);
+                        System.out.println(sameElements);
                     }
                 }
+
+
+                System.out.println("##############################################");
+
+
+                //Descending order of indexes to remove for it to not shift indexes while deleting.
+                Collections.sort(foundSameIndexes);
+                Collections.reverse(foundSameIndexes);
+                System.out.printf("elementList before deletion:%s\n", elementList);
+                System.out.printf("indexes to remove:%s\n", foundSameIndexes);
+                for (int i = 0; i < foundSameIndexes.size(); i++) { //FIXME is enhanced loop ordered? idk maybe later when it already works
+                    elementList.remove((int)foundSameIndexes.get(i));
+                }
+
+                System.out.printf("elementList after deletion:%s\n", elementList);
+                System.out.println("##############################################");
+
 
                 sameElements = sameElements.stream()
                         .distinct()
@@ -341,27 +386,56 @@ public class Generator {
                 System.out.println("Elements without dups are:");
                 System.out.println(sameElements);
 
-
-                for (AFDNode afdNode : nodeList) {
-                    //if a59fdNode.belongingElements
+                List<String> resultingElements = new ArrayList<>();
+                for (String sameElement : sameElements) {
+                    System.out.println("Now adding nexts of leaf number " + sameElement);
+                    resultingElements.addAll(new ArrayList<>(List.of(regex.nextTable.get(Integer.parseInt(sameElement)-1).split(","))));
                 }
 
 
-                break; //TODO delete, only for depuration
+                resultingElements = resultingElements.stream()
+                        .distinct()
+                        .collect(Collectors.toList());
+                Collections.sort(resultingElements);
+
+
+                System.out.println("Group of nexts to compare in existing states:");
+                System.out.println(resultingElements);
+
+                boolean found = false;
                 //Iterate nodeList to check if group already exist. If not, create one and insert it in nodeList
-                //add transition to current AFDNode
+
+                for (AFDNode afdNode : nodeList) {
+                    if (afdNode.belongingElements.equals(resultingElements)) {
+                        System.out.printf("Group %s already exists!, only doing transition for representation %s\n", resultingElements, firstRepresent);
+                        found = true;
+                        //add transition to current AFDNode
+                        nodeList.get(nextGroupToAnalyze).transitions.put(firstRepresent, afdNode);
+                    }
+                }
+                if (!found) {
+                    System.out.printf("Group %s doesn't exists!, creating and doing transition for representation %s\n", resultingElements, firstRepresent);
+                    AFDNode newNode = new AFDNode(nodeList.size());
+                    newNode.belongingElements = resultingElements;
+                    //add transition to current AFDNode
+                    nodeList.get(nextGroupToAnalyze).transitions.put(firstRepresent, newNode);
+                    nodeList.add(newNode);
+                }
             }
-
-
-
-
-
+            System.out.println("Exiting element size while");
             nextGroupToAnalyze++;
-
         }
 
+        System.out.println("Resulting AFD is:");
+        for (AFDNode afdNode : nodeList) {
+            System.out.println("#########################");
+            System.out.printf("S%s %s\n", afdNode.number, afdNode.isAcceptState? "(accept)" : "");
+            for (var entry : afdNode.transitions.entrySet()) {
+                System.out.printf("Trans[S%s,%s] = S%s\n", afdNode.number, entry.getKey(),entry.getValue().number);
+            }
+            System.out.println("#########################");
+        }
         return nodeList;
-
     }
 
     public static List<String> specialOperatorsExpansion(List<String> list) {

@@ -9,6 +9,7 @@ public class AFDNode {
     public Map<String, AFDNode> transitions;
     public int number;
     public List<String> belongingElements;
+    public boolean isAcceptState;
 
     public AFDNode(int number) {
         this.number = number;
