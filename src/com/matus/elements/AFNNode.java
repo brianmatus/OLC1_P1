@@ -4,16 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AFDNode {
+public class AFNNode {
 
-    public Map<String, AFDNode> transitions;
+    public Map<String, AFNNode> transitions;
     public int number;
-    public List<String> belongingElements;
     public boolean isAcceptState;
 
-    public AFDNode(int number) {
+    public AFNNode(int number) {
         this.number = number;
-        this.transitions = new HashMap<String, AFDNode>();
+        this.transitions = new HashMap<String, AFNNode>();
         this.isAcceptState = false;
     }
+
+
 }

@@ -8,20 +8,23 @@ public class RegexExpression {
     public String name;
     public String pattern;
 
-    public NodeTree treeHead;
 
+    //AFD
+    public NodeTree treeHead;
     public List<NodeTree> leavesList;
     public List<String> nextTable;
+    public String expressionTreeGraphviz;
+    public List<AFDNode> afd_nodes;
 
-    public String afd_tree_graphviz;
-    public List<AFDNode> afd_tree;
+    //AFN
+    public String afnGraphviz;
+    public List<AFNNode> afn_nodes;
 
     public RegexExpression(String name, String pattern) {
         this.name = name;
         this.pattern = pattern;
         this.nextTable = new ArrayList<>();
     }
-
 
     public RegexExpression() {}
 

@@ -12,6 +12,8 @@ import com.matus.exceptions.InvalidCharacterException;
 import com.matus.gui.MainWindow;
 import java_cup.runtime.Symbol;
 
+import javax.swing.*;
+
 public class Main {
 
     //Internal vars
@@ -37,12 +39,19 @@ public class Main {
 
     public static void main(String[] args){
 
-        logRegex("RegexPrueba1",".*.abc",0,0);
+
+        //rawData = ".<->*<->.<->a<->b<->*<->.<->c<->d";
+        //rawData = ".<->{letra}<->*<->|<->\"_\"<->|<->{letra}<->{digito}";
+        //rawData = ".<->{digito}<->.<->\".\"<->+<->{digito}";
+        //rawData = ".<->{digito}<->*<->|<->\"_\"<->{letra}<->{digito}";
+        //logRegex("RegexPrueba1",".<->*<->.<->a<->b<->*<->.<->c<->d",0,0);  //TODO please delete this lmao
 
 
-        //mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
-        //mainWindow.setVisible (true);
-        //System.out.println("calma, se manejo todo");
+
+
+        mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
+        mainWindow.setVisible (true);
+        System.out.println("calma, se manejo todo");
     }
 
     //0: success
@@ -144,15 +153,22 @@ public class Main {
 
 
     public static void logRegex(String name, String rawData, int row, int column) {
-        RegexExpression exp = Generator.pregenerateRegex(name, rawData, row, column);
-        if (exp != null) {
-            regexList.add(exp);
-        }
+        RegexExpression exp = new RegexExpression(name, rawData);
+        boolean correctAFD = Generator.generateAFD(exp, name, rawData, row, column);
 
+        //boolean
+
+
+        if (correctAFD) { //TODO correct afd means correct afn? idk, just in case
+            regexList.add(exp);
+            dprint(String.format("Regex %s logged sucessfully", exp.name));
+        }
     }
 
 
     public static void logRegexTest(String regexName, String str) {
+
+        System.out.printf("Testing regex with name %s for string \" %s \"\n", regexName, str);
 
     }
 
