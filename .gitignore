@@ -5,3 +5,5 @@ graphviz/
 out/
 *.java~
 entrada_seccionC/
+./tmp.exp
+tmp.exp
