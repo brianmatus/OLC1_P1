@@ -1,8 +1,9 @@
 package com.matus;
 
-import com.matus.elements.AFDNode;
-import com.matus.elements.NodeTree;
-import com.matus.elements.RegexExpression;
+import com.matus.elements.*;
+import com.matus.elements.afn.AFNNode;
+import com.matus.elements.afn.AFNStructure;
+import com.matus.elements.afn.AFNTransition;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +20,9 @@ public class Generator {
     }
 
 
-    public static boolean generateAFD(RegexExpression regexExp, String name, String rawData, int row, int column) {
+    public static boolean generateAFD(RegexExpression regexExp , int row, int column) {
+
+        String rawData = regexExp.pattern;
 
         //*Parse this baby
         String graphvizString = "digraph {\nnodesep=3;\n";
@@ -35,7 +38,7 @@ public class Generator {
         rawData = ".<->" + rawData + "<->#";
         String[] _arr = rawData.split("<->");
         for (String s : _arr) {
-            if (s.contains("{") ) { //FIXME | s.contains("\"")
+            if (s.contains("{") | s.contains("\"") ) { //FIXME | s.contains("\"")
                 //System.out.println("Skipping separation of group:" + s);
                 tmpList.add(s);
                 continue;
@@ -278,23 +281,21 @@ public class Generator {
         return true;
     }
 
-    public static boolean generateAFN(RegexExpression regexExp, String name, String rawData, int row, int column) {
+    public static boolean generateAFN(RegexExpression regexExp, int row, int column) {
+
+        System.out.println("Performing AFN parsing");
+        String rawData = regexExp.pattern;
 
         //*Parse this baby
-        String graphvizString = "digraph {\nnodesep=3;\n";
         int nodesCreated = 0;
 
         List<String> tmpList = new ArrayList<>(); //for separating elements into chars (except previous groups and special chars)
 
-        Stack<NodeTree> stack = new Stack<>(); //parsed elements go here
+        Stack<AFNStructure> stack = new Stack<>(); //parsed elements go here
 
-        List<NodeTree> leafList = new ArrayList<>();
-        regexExp.leavesList = leafList;
-
-        rawData = ".<->" + rawData + "<->#";
         String[] _arr = rawData.split("<->");
         for (String s : _arr) {
-            if (s.contains("{") ) { //FIXME | s.contains("\"")
+            if (s.contains("{") | s.contains("\"")) { //FIXME | s.contains("\"")
                 //System.out.println("Skipping separation of group:" + s);
                 tmpList.add(s);
                 continue;
@@ -308,8 +309,10 @@ public class Generator {
 
         //Main.dprint("Before expansion:");
         //Main.dprint(tmpList);
-        //Expansion of + and ?
+
+        //Expansion of + and ? //FIXME in theory not necessary, but equivalent and reduces switch cases
         tmpList = Generator.specialOperatorsExpansion(new ArrayList<>(tmpList)); //before stuff goes wild
+
         //Main.dprint("After expansion:");
         //Main.dprint(tmpList);
 
@@ -318,7 +321,10 @@ public class Generator {
             //Main.dprint("Now analyzing " + s);
             //Main.dprint("Current stack is" + stack);
             switch (s) {
+
                 case "." -> {
+
+                    //TODO be sure to grab transition symbol before removing.
                     //stack underflow
                     if (stack.size() < 2) {
                         String f = String.format("Expresión REGEX invalida (operación . definida sin elementos previos): %s", rawData);
@@ -327,66 +333,38 @@ public class Generator {
                         return false;
                     }
 
-                    NodeTree a = stack.pop();
-                    NodeTree b = stack.pop();
+                    AFNStructure structure = new AFNStructure();
 
-                    NodeTree parent = new NodeTree();
-                    parent.label = ".";
-                    parent.orderInTree = nodesCreated;
+                    AFNStructure a = stack.pop();
+                    AFNStructure b = stack.pop();
 
-                    parent.number = "";
-                    parent.leftChildren = a;
-                    a.parent = parent;
-                    parent.rightChildren = b;
-                    b.parent = parent;
+                    //Adopt all nodes
+                    structure.nodes.addAll(a.nodes);
+                    structure.nodes.addAll(b.nodes);
+                    structure.nodes.add(a.acceptanceNode);
 
-                    //Nullable
-                    parent.nullable = a.nullable && b.nullable;
+                    //Transfer b.initial to a.final transitions
+                    a.acceptanceNode.transitions.addAll(b.initialNode.transitions);
 
-                    //First Pos
-                    if (a.nullable) parent.firstPos = Utils.orderStringArray(Utils.removeStringListDuplicates(a.firstPos + "," + b.firstPos));
-                    else parent.firstPos = a.firstPos;
+                    //Update initial
+                    structure.initialNode = a.initialNode;
+                    //Update final
+                    structure.acceptanceNode = b.acceptanceNode;
 
-                    //Last Pos
-                    if (b.nullable) parent.lastPos = Utils.orderStringArray(Utils.removeStringListDuplicates(a.lastPos + "," + b.lastPos));
-                    else parent.lastPos = b.lastPos;
-                    stack.add(parent); // (a operand b)
+                    stack.add(structure);
 
-                    //AFD Tree method next table
-                    //Main.dprint("adding next for");
-                    //Main.dprint(a.lastPos);
-                    //Main.dprint(b.firstPos);
-                    for (String ultPosC1 : a.lastPos.split(",")) {
-                        for (String primPosC2 : b.firstPos.split(",")) {
-
-                            //Main.dprint("A ultposc1:%s le sigue primposc2:%s\n",ultPosC1, primPosC2);
-
-                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
-                            String f = "";
-                            if (!prev.equals("")) f = prev + ",";
-                            f += primPosC2;
-                            regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1, f);
-                        }
-                        //Remove duplicates and sort
-                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
-                        f = Utils.removeStringListDuplicates(f);
-                        f = Utils.orderStringArray(f);
-                        regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1,f);
-                    }
-
-                    //Graphviz
-
-                    graphvizString += String.format(
-                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
-                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
-                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
-                            , nodesCreated, parent.nullable? "V":"F", parent.firstPos, Utils.centerString(parent.label,16), parent.lastPos, " ");
-
-                    graphvizString += String.format("\"node-%s\" -> \"node-%s\" \n \"node-%s\" -> \"node-%s\"\n",nodesCreated, b.orderInTree, nodesCreated, a.orderInTree);
-                    nodesCreated++;
+                    System.out.println("#############################################");
+                    System.out.println("Generated . with #nodes:" + structure.nodes.size());
+                    System.out.println("#Initial:" + structure.initialNode.number);
+                    System.out.println("#Accept:" + structure.acceptanceNode.number);
+                    System.out.println("#############################################");
 
                 }
+
                 case "|" -> {
+
+
+                    //TODO be sure to grab transition symbol before removing.
                     //stack underflow
                     if (stack.size() < 2) {
                         String f = String.format("Expresión REGEX invalida (operación | definida sin elementos previos): %s", rawData);
@@ -394,136 +372,108 @@ public class Generator {
                         Main.logSyntacticError(rawData, "conj", f, row, column);
                         return false;
                     }
-                    NodeTree a = stack.pop();
-                    NodeTree b = stack.pop();
 
-                    NodeTree parent = new NodeTree();
-
-                    parent.label = "|";
-                    parent.orderInTree = nodesCreated;
-
-                    parent.number = "";
-                    parent.leftChildren = a;
-                    a.parent = parent;
-                    parent.rightChildren = b;
-                    b.parent = parent;
-
-                    //Nullable
-                    parent.nullable = a.nullable || b.nullable;
-
-                    //First Pos
-                    if (a.nullable) parent.firstPos = Utils.removeStringListDuplicates(a.firstPos + "," + b.firstPos);
-                    else parent.firstPos = a.firstPos;
-
-                    //Last Pos
-                    if (b.nullable) parent.lastPos = Utils.removeStringListDuplicates(a.lastPos + "," + b.lastPos);
-                    else parent.lastPos = b.lastPos;
-                    stack.add(parent); // (a operand b)
-
-
-                    graphvizString += String.format(
-                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
-                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
-                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
-                            , nodesCreated, parent.nullable? "V":"F", parent.firstPos, Utils.centerString(parent.label,16), parent.lastPos, " ");
-
-
-                    //Graphviz
-                    graphvizString += String.format("\"node-%s\" -> \"node-%s\" \n \"node-%s\" -> \"node-%s\"\n",nodesCreated, a.orderInTree, nodesCreated, b.orderInTree);
+                    AFNStructure structure = new AFNStructure();
+                    AFNNode initial = new AFNNode();
+                    initial.number = nodesCreated;
                     nodesCreated++;
+                    AFNNode acceptance = new AFNNode();
+                    acceptance.number = nodesCreated;
+                    nodesCreated++;
+                    structure.initialNode = initial;
+                    structure.acceptanceNode = acceptance;
+
+                    AFNStructure a = stack.pop();
+                    AFNStructure b = stack.pop();
+
+                    structure.nodes.addAll(a.nodes);
+                    structure.nodes.addAll(b.nodes);
+                    structure.nodes.add(a.initialNode);
+                    structure.nodes.add(a.acceptanceNode);
+                    structure.nodes.add(b.initialNode);
+                    structure.nodes.add(b.acceptanceNode);
+
+                    //Left
+                    initial.transitions.add(new AFNTransition("{e}", a.initialNode, "normal"));
+                    initial.transitions.add(new AFNTransition("{e}", b.initialNode, "normal"));
+
+                    //Right
+                    a.acceptanceNode.transitions.add(new AFNTransition("{e}", acceptance, "normal"));
+                    b.acceptanceNode.transitions.add(new AFNTransition("{e}", acceptance, "normal"));
+
+                    stack.add(structure);
+
                 }
 
                 case "*" -> {
+
+
                     if (stack.size() < 1) {
                         String f = String.format("Expresión REGEX invalida (operación * definida sin elemento previo): %s", rawData);
                         Main.cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                         Main.logSyntacticError(rawData, "conj", f, row, column);
                         return false;
                     }
-                    NodeTree a = stack.pop();
-                    NodeTree parent = new NodeTree();
 
-                    parent.label = "*";
-                    parent.orderInTree = nodesCreated;
-
-                    parent.number = "";
-                    parent.leftChildren = a;
-                    a.parent = parent;
-
-                    //Nullable
-                    parent.nullable = true;
-                    //First Pos
-                    parent.firstPos = a.firstPos;
-                    //Last Pos
-                    parent.lastPos = a.lastPos;
-                    stack.add(parent); // (a operand b)
-
-
-                    //Main.dprint("Element for next table:");
-                    //Main.dprint(Arrays.toString(a.lastPos.split(",")));
-                    //Main.dprint(Arrays.toString(a.firstPos.split(",")));
-
-                    //AFD Tree method next table
-                    for (String ultPosC1 : a.lastPos.split(",")) {
-                        for (String primPosC1 : a.firstPos.split(",")) {
-                            //Main.dprint(String.format("A ultposc1:%s le sigue primposc1:%s\n",ultPosC1, primPosC1));
-                            String prev = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
-                            String f = "";
-                            if (!prev.equals("")) f = prev + ",";
-                            f += primPosC1;
-                            regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1, f);
-                        }
-                        //Remove duplicates
-                        String f = regexExp.nextTable.get(Integer.parseInt(ultPosC1)-1);
-                        f = Utils.removeStringListDuplicates(f);
-                        //Main.dprint("Before call for removing dups");
-                        //Main.dprint(f);
-                        regexExp.nextTable.set(Integer.parseInt(ultPosC1)-1,f);
-                    }
-
-                    //Graphviz
-                    graphvizString += String.format(
-                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
-                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
-                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
-                            , nodesCreated, "V", parent.firstPos, Utils.centerString(parent.label,16), parent.lastPos, " ");
-
-                    graphvizString += String.format("\"node-%s\" -> \"node-%s\"[dir=none]\n",nodesCreated, a.orderInTree);
+                    System.out.println("a");
+                    AFNStructure structure = new AFNStructure();
+                    AFNNode initial = new AFNNode();
+                    initial.number = nodesCreated;
                     nodesCreated++;
-                }
+                    AFNNode acceptance = new AFNNode();
+                    acceptance.number = nodesCreated;
+                    nodesCreated++;
+                    structure.initialNode = initial;
+                    structure.acceptanceNode = acceptance;
 
-                // + and ? are expanded in specialOperatorsExpansion() before this loop.
+                    AFNStructure a = stack.pop();
+
+                    structure.nodes.addAll(a.nodes);
+                    structure.nodes.add(a.initialNode);
+                    structure.nodes.add(a.acceptanceNode);
+
+                    //Left
+                    initial.transitions.add(new AFNTransition("{e}", a.initialNode, "normal"));
+                    initial.transitions.add(new AFNTransition("{e}", acceptance, "normal"));
+
+                    //Right
+                    a.acceptanceNode.transitions.add(new AFNTransition("{e}", acceptance, "normal"));
+                    a.acceptanceNode.transitions.add(new AFNTransition("{e}", a.initialNode, "normal"));
+
+                    stack.add(structure);
+
+                }
+                //TODO ? + expanded
+
 
                 default -> { //Leaf
-                    //Main.dprint("Leaf encountered with " + s);
-                    int leafCount = leafList.size() + 1;
-                    //*(String label, String firstPos, String lastPos, boolean nullable, int number, boolean isEpsilon)
-                    boolean nullable = s.equals("{epsilon}");
-                    NodeTree theNode = new NodeTree(s,Integer.toString(leafCount), Integer.toString(leafCount), nullable, Integer.toString(leafCount), s.equals("epsilon"), nodesCreated);
-                    leafList.add(theNode);
-                    //Main.dprint("adding to stack"); //TODO delete me
-                    stack.add(theNode);
-                    //Graphviz
-                    graphvizString += String.format(
-                            "\"node-%s\"[fixedsize=true,label=<<TABLE CELLSPACING=\"2\" CELLPADDING=\"2\" BORDER=\"0\">" +
-                                    "<TR><TD></TD><TD>%s</TD><TD></TD></TR><TR><TD></TD><TD></TD><TD></TD></TR>" +
-                                    "<TR><TD>%s</TD><TD>%s</TD><TD>%s</TD></TR><TR><TD></TD><TD>%s</TD><TD></TD></TR></TABLE>>]\n"
-                            , nodesCreated, nullable? "V":"F", leafCount, Utils.centerString(s,14), leafCount, leafCount);
+
+                    AFNStructure structure = new AFNStructure();
+                    //First
+                    AFNNode initialNode = new AFNNode(); //label of nodesCreated
+                    initialNode.number = nodesCreated;
+                    nodesCreated++;
+                    //Second
+                    AFNNode acceptanceNode = new AFNNode(); //label of nodesCreated
+                    acceptanceNode.number = nodesCreated;
+                    initialNode.transitions.add(new AFNTransition(s, acceptanceNode, "normal"));
                     nodesCreated++;
 
-                    regexExp.nextTable.add("");
+                    structure.initialNode = initialNode;
+                    structure.acceptanceNode = acceptanceNode;
+                    stack.add(structure);
+                    System.out.println("#############################################");
+                    System.out.println("Generated leaf with #nodes:" + structure.nodes.size());
+                    System.out.println("#Initial:" + structure.initialNode.number);
+                    System.out.println("#Accept:" + structure.acceptanceNode.number);
+                    System.out.println("#############################################");
+
                 }
             }
-            //Main.dprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            //Main.dprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            //Main.dprint(graphvizString + "\n}");
         }
 
-        graphvizString += "\n}";
-        Main.dprint(graphvizString);
-        regexExp.expressionTreeGraphviz = graphvizString;
 
-        System.out.println("RESULTADO:" + stack.peek().label);
+        //System.out.println("RESULTADO:" + stack.peek().label);
         System.out.println(stack.size());
 
         if (stack.size() != 1) {//TODO this should always be 1
@@ -532,8 +482,44 @@ public class Generator {
             Main.logSyntacticError(rawData, "conj", f, row, column);
             return false;
         }
-        regexExp.treeHead = stack.peek();
-        regexExp.afd_nodes = Generator.generateStates(regexExp);
+
+        AFNStructure result = stack.peek(); //pop? idk
+
+        System.out.printf("Resulting AFN has %d nodes\n", result.nodes.size() + 2/*initial and accept*/);
+
+
+        //*Encode this baby
+        String graphvizString = "digraph {\nrankdir=LR;\n";
+
+        //*Initial Node and it's transitions
+        graphvizString += String.format("\"node-%s\"[label=\"\"]\n", result.initialNode.number);
+
+        for (AFNTransition transition : result.initialNode.transitions) {
+            String lbl = transition.symbol.equals("{e}") ? "ε" : transition.symbol;
+            graphvizString += String.format("\"node-%s\" -> \"node-%s\"[label=\"%s\"]\n", result.initialNode.number, transition.destination.number, lbl);
+        }
+
+        //*Nodes and transitions (including transits to final)
+        for (AFNNode node : result.nodes) {
+            graphvizString += String.format("\"node-%s\"[label=\"\"]\n", node.number);
+            for (AFNTransition transition : node.transitions) {
+                String lbl = transition.symbol.equals("{e}") ? "ε" : transition.symbol;
+                graphvizString += String.format("\"node-%s\" -> \"node-%s\"[label=\"%s\"]\n", node.number, transition.destination.number, lbl);
+            }
+        }
+
+
+
+        //*Accept Node (without transitions, as it shouldn't have?)
+        graphvizString += String.format("\"node-%s\"[label=\"\" shape=\"doublecircle\"]\n}", result.acceptanceNode.number);
+
+
+        Main.dprint("Generated element for AFN:");
+        Main.dprint(graphvizString);
+
+        regexExp.afnStructure = result;
+        regexExp.afnGraphviz = graphvizString;
+
         return true;
     }
 
@@ -594,7 +580,7 @@ public class Generator {
                 for (int i = 0; i < elementList.size(); i++) {
                     String next = elementList.get(i);
                     String represents = regex.leavesList.get(Integer.parseInt(next)-1).label;
-                    System.out.printf("%s: has element %s\n",next, represents);
+                    //Main.dprint(String.format("%s: has element %s\n",next, represents));
                     //First is always already grabbed
                     if (Objects.equals(represents, firstRepresent)) {
                         //Main.dprint("same representation!");
@@ -609,7 +595,7 @@ public class Generator {
                     }
                 }
 
-                System.out.println("##############################################");
+                //Main.dprint("##############################################");
 
                 //Descending order of indexes to remove for it to not shift indexes while deleting.
                 Collections.sort(foundSameIndexes);
@@ -676,11 +662,13 @@ public class Generator {
             System.out.println("#########################");
             System.out.printf("S%s %s\n", afdNode.number, afdNode.isAcceptState? "(accept)" : "");
 
-            graphviz += String.format("\"state-%s\"[shape=%s]\n[label=\"S%s\"]", afdNode.number, afdNode.isAcceptState? "doublecircle":"circle", afdNode.number);
+            graphviz += String.format("\"state-%s\"[shape=%s label=\"S%s\"]\n", afdNode.number, afdNode.isAcceptState? "doublecircle":"circle", afdNode.number);
 
             for (var entry : afdNode.transitions.entrySet()) {
                 System.out.printf("Trans[S%s,%s] = S%s\n", afdNode.number, entry.getKey(),entry.getValue().number);
-                graphviz += String.format("\"state-%s\" -> \"state-%s\" [label=%s]\n", afdNode.number, entry.getValue().number, entry.getKey());
+                String lbl = entry.getKey();
+                if (lbl.contains("\"")) lbl = "\\" + lbl.substring(0,lbl.length()-1) + "\\" + lbl.substring(lbl.length()-1);
+                graphviz += String.format("\"state-%s\" -> \"state-%s\" [label=\"%s\"]\n", afdNode.number, entry.getValue().number, lbl);
             }
             System.out.println("#########################");
 

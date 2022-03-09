@@ -1,0 +1,1 @@
+b.initial will delegate to a.final

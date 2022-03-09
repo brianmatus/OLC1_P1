@@ -1,5 +1,7 @@
 package com.matus.elements;
 
+import com.matus.elements.afn.AFNStructure;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +19,8 @@ public class RegexExpression {
     public List<AFDNode> afd_nodes;
 
     //AFN
+    public AFNStructure afnStructure;
     public String afnGraphviz;
-    public List<AFNNode> afn_nodes;
 
     public RegexExpression(String name, String pattern) {
         this.name = name;

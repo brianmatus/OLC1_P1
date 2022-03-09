@@ -44,14 +44,15 @@ public class Main {
         //rawData = ".<->{letra}<->*<->|<->\"_\"<->|<->{letra}<->{digito}";
         //rawData = ".<->{digito}<->.<->\".\"<->+<->{digito}";
         //rawData = ".<->{digito}<->*<->|<->\"_\"<->{letra}<->{digito}";
-        //logRegex("RegexPrueba1",".<->*<->.<->a<->b<->*<->.<->c<->d",0,0);  //TODO please delete this lmao
+        //logRegex("RegexPrueba1",".<->*<->.<->\"z\"<->b<->*<->.<->c<->d",0,0);  //TODO please delete this lmao
+        logRegex("RegexPrueba1",".<->|<->a<->b<->|<->c<->d",0,0);  //TODO please delete this lmao
 
 
 
 
-        mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
-        mainWindow.setVisible (true);
-        System.out.println("calma, se manejo todo");
+        //mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
+        //mainWindow.setVisible (true);
+        //System.out.println("calma, se manejo todo");
     }
 
     //0: success
@@ -154,15 +155,13 @@ public class Main {
 
     public static void logRegex(String name, String rawData, int row, int column) {
         RegexExpression exp = new RegexExpression(name, rawData);
-        boolean correctAFD = Generator.generateAFD(exp, name, rawData, row, column);
+        boolean correctAFD = Generator.generateAFD(exp, row, column);
+        if (!correctAFD) { return; }
+        boolean correctAFN = Generator.generateAFN(exp, row, column); //FIXME correct afd means correct afn? idk, just in case
+        if (!correctAFN) { return; }
+        regexList.add(exp);
+        dprint(String.format("Regex %s logged sucessfully", exp.name));
 
-        //boolean
-
-
-        if (correctAFD) { //TODO correct afd means correct afn? idk, just in case
-            regexList.add(exp);
-            dprint(String.format("Regex %s logged sucessfully", exp.name));
-        }
     }
 
 
