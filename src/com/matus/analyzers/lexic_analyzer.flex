@@ -1,9 +1,8 @@
 package com.matus.analyzers;
 
-import com.matus.Main;import com.matus.elements.LexicError;
+import com.matus.Main;
 
 import java_cup.runtime.Symbol;
-import java_cup.runtime.*;
 
 %%
 %class LexicAnalyzer
@@ -19,7 +18,7 @@ import java_cup.runtime.*;
 delimiters = [ \r\t\n]+
 
 comment = \/\/[^\r\n]*
-multicomment = "<!".*"!>"
+multicomment = "<!"[^!>]*"!>"
 word = [a-zA-Z]+
 number = [0-9]+
 string = \"[^\"]*\"
@@ -29,7 +28,9 @@ s_simplequote = \\'
 s_doublequote = \\\"
 range = \~
 //                                        space
-range_special_char = [!#-$&-\)/=\?@\[-`]|\" \" //TODO this are missing language chars like   {} "space" dot | //TODO CANT USE < cause of multi comment
+
+underscore = _
+range_special_char = [!#-$&-\)/=\?@\[-\^`]|\" \" | {underscore} //TODO this are missing language chars like   {} "space" dot | //TODO CANT USE < cause of multi comment
 
 key_o = \{
 key_c = \}
@@ -45,7 +46,7 @@ plus_sign = \+
 
 //abby = ♥
 
-id = {word}({word}*{number}*)*
+id = {word}({word}|{number}|{underscore})*
 
 section_separator = \%\%
 
@@ -56,7 +57,7 @@ section_separator = \%\%
 <YYINITIAL>{comment} { System.out.println("Reconocio token:<comment> lexema:"+yytext());Main.logToken("comment", yytext(), yyline, yycolumn); }
 <YYINITIAL>{multicomment} { System.out.println("Reconocio token:<multicomment> lexema:"+yytext());Main.logToken("multicomment", yytext(), yyline, yycolumn);}
 
-<YYINITIAL>{id} {System.out.println("Reconocio token:<id> lexema:"+yytext() + "-" + yyline + "-" + yycolumn);Main.logToken("id", yytext(), yyline, yycolumn);return new Symbol(Symbols.id, yycolumn, yyline, yytext());}
+<YYINITIAL>{id} {System.out.println("Reconocio token:<id> lexema:"+yytext() + ":" + yyline + "-" + yycolumn);Main.logToken("id", yytext(), yyline, yycolumn);return new Symbol(Symbols.id, yycolumn, yyline, yytext());}
 //<YYINITIAL>{word} {System.out.println("Reconocio token:<word> lexema:"+yytext());Main.logToken("comment", yytext(), yyline, yycolumn);return new Symbol(Symbols.word, yycolumn, yyline, yytext());}
 <YYINITIAL>{number} {System.out.println("Reconocio token:<number> lexema:"+yytext());Main.logToken("number", yytext(), yyline, yycolumn);return new Symbol(Symbols.number, yycolumn, yyline, yytext());}
 <YYINITIAL>{string} {System.out.println("Reconocio token:<string> lexema:"+yytext());Main.logToken("string", yytext(), yyline, yycolumn);return new Symbol(Symbols.string, yycolumn, yyline, yytext());}

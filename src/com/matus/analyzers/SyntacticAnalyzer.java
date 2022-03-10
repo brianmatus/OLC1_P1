@@ -5,11 +5,7 @@
 
 package com.matus.analyzers;
 
-import java_cup.runtime.Symbol;
-import com.matus.elements.Token;
 import com.matus.Main;
-import com.matus.elements.SyntacticError;
-import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -34,19 +30,19 @@ public class SyntacticAnalyzer extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\047\000\002\002\004\000\002\002\007\000\002\003" +
-    "\004\000\002\003\003\000\002\003\004\000\002\003\003" +
-    "\000\002\005\011\000\002\005\003\000\002\010\005\000" +
-    "\002\010\003\000\002\012\005\000\002\012\003\000\002" +
-    "\011\003\000\002\011\003\000\002\011\003\000\002\011" +
+    "\000\051\000\002\002\004\000\002\002\007\000\002\015" +
+    "\004\000\002\015\003\000\002\003\004\000\002\003\003" +
+    "\000\002\003\004\000\002\003\003\000\002\005\011\000" +
+    "\002\005\003\000\002\010\005\000\002\010\003\000\002" +
+    "\012\005\000\002\012\003\000\002\011\003\000\002\011" +
     "\003\000\002\011\003\000\002\011\003\000\002\011\003" +
     "\000\002\011\003\000\002\011\003\000\002\011\003\000" +
-    "\002\011\003\000\002\011\003\000\002\006\007\000\002" +
-    "\013\004\000\002\013\003\000\002\014\003\000\002\014" +
+    "\002\011\003\000\002\011\003\000\002\011\003\000\002" +
+    "\011\003\000\002\006\007\000\002\013\004\000\002\013" +
     "\003\000\002\014\003\000\002\014\003\000\002\014\003" +
-    "\000\002\014\003\000\002\014\003\000\002\014\005\000" +
-    "\002\014\003\000\002\004\005\000\002\004\004\000\002" +
-    "\007\005" });
+    "\000\002\014\003\000\002\014\003\000\002\014\003\000" +
+    "\002\014\003\000\002\014\005\000\002\014\003\000\002" +
+    "\004\005\000\002\004\004\000\002\007\005" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -54,65 +50,66 @@ public class SyntacticAnalyzer extends java_cup.runtime.lr_parser {
   /** Parse-action table. */
   protected static final short[][] _action_table = 
     unpackFromStrings(new String[] {
-    "\000\075\000\004\010\005\001\002\000\004\002\077\001" +
+    "\000\077\000\004\010\005\001\002\000\004\002\101\001" +
     "\002\000\006\003\010\025\012\001\002\000\010\003\010" +
-    "\017\066\025\012\001\002\000\010\003\ufffe\017\ufffe\025" +
-    "\ufffe\001\002\000\010\003\ufffa\017\ufffa\025\ufffa\001\002" +
-    "\000\010\003\ufffc\017\ufffc\025\ufffc\001\002\000\006\012" +
+    "\017\067\025\012\001\002\000\010\003\ufffc\017\ufffc\025" +
+    "\ufffc\001\002\000\010\003\ufff8\017\ufff8\025\ufff8\001\002" +
+    "\000\010\003\ufffa\017\ufffa\025\ufffa\001\002\000\006\012" +
     "\014\015\013\001\002\000\004\025\035\001\002\000\004" +
     "\013\015\001\002\000\024\003\026\010\027\020\017\021" +
-    "\020\022\022\023\030\025\021\027\024\030\025\001\002" +
-    "\000\026\003\uffe7\010\uffe7\014\uffe7\020\uffe7\021\uffe7\022" +
-    "\uffe7\023\uffe7\025\uffe7\027\uffe7\030\uffe7\001\002\000\026" +
-    "\003\uffe6\010\uffe6\014\uffe6\020\uffe6\021\uffe6\022\uffe6\023" +
-    "\uffe6\025\uffe6\027\uffe6\030\uffe6\001\002\000\026\003\uffe4" +
-    "\010\uffe4\014\uffe4\020\uffe4\021\uffe4\022\uffe4\023\uffe4\025" +
-    "\uffe4\027\uffe4\030\uffe4\001\002\000\026\003\uffe5\010\uffe5" +
-    "\014\uffe5\020\uffe5\021\uffe5\022\uffe5\023\uffe5\025\uffe5\027" +
-    "\uffe5\030\uffe5\001\002\000\026\003\uffe3\010\uffe3\014\uffe3" +
-    "\020\uffe3\021\uffe3\022\uffe3\023\uffe3\025\uffe3\027\uffe3\030" +
-    "\uffe3\001\002\000\026\003\026\010\027\014\034\020\017" +
-    "\021\020\022\022\023\030\025\021\027\024\030\025\001" +
-    "\002\000\026\003\uffe1\010\uffe1\014\uffe1\020\uffe1\021\uffe1" +
-    "\022\uffe1\023\uffe1\025\uffe1\027\uffe1\030\uffe1\001\002\000" +
-    "\026\003\uffe2\010\uffe2\014\uffe2\020\uffe2\021\uffe2\022\uffe2" +
-    "\023\uffe2\025\uffe2\027\uffe2\030\uffe2\001\002\000\026\003" +
-    "\uffde\010\uffde\014\uffde\020\uffde\021\uffde\022\uffde\023\uffde" +
-    "\025\uffde\027\uffde\030\uffde\001\002\000\004\025\031\001" +
-    "\002\000\026\003\uffe0\010\uffe0\014\uffe0\020\uffe0\021\uffe0" +
-    "\022\uffe0\023\uffe0\025\uffe0\027\uffe0\030\uffe0\001\002\000" +
-    "\004\011\032\001\002\000\026\003\uffdf\010\uffdf\014\uffdf" +
-    "\020\uffdf\021\uffdf\022\uffdf\023\uffdf\025\uffdf\027\uffdf\030" +
-    "\uffdf\001\002\000\026\003\uffe8\010\uffe8\014\uffe8\020\uffe8" +
-    "\021\uffe8\022\uffe8\023\uffe8\025\uffe8\027\uffe8\030\uffe8\001" +
-    "\002\000\010\003\uffe9\017\uffe9\025\uffe9\001\002\000\004" +
+    "\021\022\022\023\030\025\020\027\024\030\025\001\002" +
+    "\000\026\003\uffe5\010\uffe5\014\uffe5\020\uffe5\021\uffe5\022" +
+    "\uffe5\023\uffe5\025\uffe5\027\uffe5\030\uffe5\001\002\000\026" +
+    "\003\uffe4\010\uffe4\014\uffe4\020\uffe4\021\uffe4\022\uffe4\023" +
+    "\uffe4\025\uffe4\027\uffe4\030\uffe4\001\002\000\026\003\uffe3" +
+    "\010\uffe3\014\uffe3\020\uffe3\021\uffe3\022\uffe3\023\uffe3\025" +
+    "\uffe3\027\uffe3\030\uffe3\001\002\000\026\003\uffe2\010\uffe2" +
+    "\014\uffe2\020\uffe2\021\uffe2\022\uffe2\023\uffe2\025\uffe2\027" +
+    "\uffe2\030\uffe2\001\002\000\026\003\uffe1\010\uffe1\014\uffe1" +
+    "\020\uffe1\021\uffe1\022\uffe1\023\uffe1\025\uffe1\027\uffe1\030" +
+    "\uffe1\001\002\000\026\003\026\010\027\014\034\020\017" +
+    "\021\021\022\022\023\030\025\020\027\024\030\025\001" +
+    "\002\000\026\003\uffdf\010\uffdf\014\uffdf\020\uffdf\021\uffdf" +
+    "\022\uffdf\023\uffdf\025\uffdf\027\uffdf\030\uffdf\001\002\000" +
+    "\026\003\uffe0\010\uffe0\014\uffe0\020\uffe0\021\uffe0\022\uffe0" +
+    "\023\uffe0\025\uffe0\027\uffe0\030\uffe0\001\002\000\026\003" +
+    "\uffdc\010\uffdc\014\uffdc\020\uffdc\021\uffdc\022\uffdc\023\uffdc" +
+    "\025\uffdc\027\uffdc\030\uffdc\001\002\000\004\025\031\001" +
+    "\002\000\026\003\uffde\010\uffde\014\uffde\020\uffde\021\uffde" +
+    "\022\uffde\023\uffde\025\uffde\027\uffde\030\uffde\001\002\000" +
+    "\004\011\032\001\002\000\026\003\uffdd\010\uffdd\014\uffdd" +
+    "\020\uffdd\021\uffdd\022\uffdd\023\uffdd\025\uffdd\027\uffdd\030" +
+    "\uffdd\001\002\000\026\003\uffe6\010\uffe6\014\uffe6\020\uffe6" +
+    "\021\uffe6\022\uffe6\023\uffe6\025\uffe6\027\uffe6\030\uffe6\001" +
+    "\002\000\010\003\uffe7\017\uffe7\025\uffe7\001\002\000\004" +
     "\012\036\001\002\000\004\013\037\001\002\000\032\003" +
     "\052\010\053\011\045\012\044\013\051\020\041\022\043" +
     "\023\054\024\055\025\042\027\046\030\050\001\002\000" +
-    "\006\014\ufff8\016\062\001\002\000\010\007\uffed\014\uffed" +
-    "\016\uffed\001\002\000\010\007\ufff5\014\ufff5\016\ufff5\001" +
-    "\002\000\010\007\uffec\014\uffec\016\uffec\001\002\000\010" +
-    "\007\ufff0\014\ufff0\016\ufff0\001\002\000\010\007\uffee\014" +
-    "\uffee\016\uffee\001\002\000\010\007\ufff4\014\ufff4\016\ufff4" +
-    "\001\002\000\010\007\060\014\ufff6\016\ufff6\001\002\000" +
-    "\010\007\ufff2\014\ufff2\016\ufff2\001\002\000\010\007\ufff1" +
-    "\014\ufff1\016\ufff1\001\002\000\010\007\uffea\014\uffea\016" +
-    "\uffea\001\002\000\010\007\uffef\014\uffef\016\uffef\001\002" +
-    "\000\010\007\uffeb\014\uffeb\016\uffeb\001\002\000\010\007" +
-    "\ufff3\014\ufff3\016\ufff3\001\002\000\004\014\057\001\002" +
-    "\000\010\003\ufffb\017\ufffb\025\ufffb\001\002\000\032\003" +
+    "\006\014\ufff6\016\062\001\002\000\010\007\uffeb\014\uffeb" +
+    "\016\uffeb\001\002\000\010\007\ufff3\014\ufff3\016\ufff3\001" +
+    "\002\000\010\007\uffea\014\uffea\016\uffea\001\002\000\010" +
+    "\007\uffee\014\uffee\016\uffee\001\002\000\010\007\uffec\014" +
+    "\uffec\016\uffec\001\002\000\010\007\ufff2\014\ufff2\016\ufff2" +
+    "\001\002\000\010\007\060\014\ufff4\016\ufff4\001\002\000" +
+    "\010\007\ufff0\014\ufff0\016\ufff0\001\002\000\010\007\uffef" +
+    "\014\uffef\016\uffef\001\002\000\010\007\uffe8\014\uffe8\016" +
+    "\uffe8\001\002\000\010\007\uffed\014\uffed\016\uffed\001\002" +
+    "\000\010\007\uffe9\014\uffe9\016\uffe9\001\002\000\010\007" +
+    "\ufff1\014\ufff1\016\ufff1\001\002\000\004\014\057\001\002" +
+    "\000\010\003\ufff9\017\ufff9\025\ufff9\001\002\000\032\003" +
     "\052\010\053\011\045\012\044\013\051\020\041\022\043" +
     "\023\054\024\055\025\042\027\046\030\050\001\002\000" +
-    "\004\014\ufff9\001\002\000\032\003\052\010\053\011\045" +
+    "\004\014\ufff7\001\002\000\032\003\052\010\053\011\045" +
     "\012\044\013\051\020\041\022\043\023\054\024\055\025" +
-    "\042\027\046\030\050\001\002\000\006\014\ufff7\016\ufff7" +
-    "\001\002\000\010\003\uffff\017\uffff\025\uffff\001\002\000" +
-    "\010\003\ufffd\017\ufffd\025\ufffd\001\002\000\004\025\071" +
-    "\001\002\000\004\014\075\001\002\000\004\011\074\001" +
-    "\002\000\004\015\072\001\002\000\004\030\073\001\002" +
-    "\000\004\014\uffdb\001\002\000\004\002\000\001\002\000" +
-    "\006\011\uffdc\025\071\001\002\000\004\011\uffdd\001\002" +
-    "\000\004\002\001\001\002" });
+    "\042\027\046\030\050\001\002\000\006\014\ufff5\016\ufff5" +
+    "\001\002\000\010\003\ufffd\017\ufffd\025\ufffd\001\002\000" +
+    "\004\025\072\001\002\000\010\003\ufffb\017\ufffb\025\ufffb" +
+    "\001\002\000\006\017\067\025\ufffe\001\002\000\004\025" +
+    "\uffff\001\002\000\004\014\077\001\002\000\004\015\075" +
+    "\001\002\000\004\011\074\001\002\000\004\002\000\001" +
+    "\002\000\004\030\076\001\002\000\004\014\uffd9\001\002" +
+    "\000\006\011\uffda\025\072\001\002\000\004\011\uffdb\001" +
+    "\002\000\004\002\001\001\002" });
 
   /** Access to parse-action table. */
   public short[][] action_table() {return _action_table;}
@@ -120,28 +117,29 @@ public class SyntacticAnalyzer extends java_cup.runtime.lr_parser {
   /** <code>reduce_goto</code> table. */
   protected static final short[][] _reduce_table = 
     unpackFromStrings(new String[] {
-    "\000\075\000\004\002\003\001\001\000\002\001\001\000" +
-    "\010\003\005\005\006\006\010\001\001\000\006\005\063" +
-    "\006\064\001\001\000\002\001\001\000\002\001\001\000" +
-    "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
-    "\001\001\000\006\013\022\014\015\001\001\000\002\001" +
+    "\000\077\000\004\002\003\001\001\000\002\001\001\000" +
+    "\010\003\005\005\006\006\010\001\001\000\010\005\063" +
+    "\006\065\015\064\001\001\000\002\001\001\000\002\001" +
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\002\001\001\000\004\014\032\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
+    "\000\002\001\001\000\006\013\022\014\015\001\001\000" +
     "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
-    "\001\001\000\010\010\055\011\046\012\037\001\001\000" +
+    "\001\001\000\002\001\001\000\004\014\032\001\001\000" +
     "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
     "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\002\001\001\000\002\001\001\000\002\001\001\000\004" +
-    "\011\060\001\001\000\002\001\001\000\004\011\062\001" +
+    "\000\002\001\001\000\010\010\055\011\046\012\037\001" +
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\006\004\067\007\066\001\001\000\002\001\001\000" +
+    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
     "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
-    "\001\001\000\002\001\001\000\006\004\075\007\066\001" +
-    "\001\000\002\001\001\000\002\001\001" });
+    "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
+    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
+    "\000\004\011\060\001\001\000\002\001\001\000\004\011" +
+    "\062\001\001\000\002\001\001\000\002\001\001\000\006" +
+    "\004\072\007\070\001\001\000\002\001\001\000\004\015" +
+    "\067\001\001\000\002\001\001\000\002\001\001\000\002" +
+    "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
+    "\001\000\002\001\001\000\006\004\077\007\070\001\001" +
+    "\000\002\001\001\000\002\001\001" });
 
   /** Access to <code>reduce_goto</code> table. */
   public short[][] reduce_table() {return _reduce_table;}
@@ -218,7 +216,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 1: // Abby ::= key_o E_PART1 section_separator E_PART2 key_c 
+          case 1: // Abby ::= key_o E_PART1 E_SEPARATOR E_PART2 key_c 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).left;
@@ -229,7 +227,7 @@ class CUP$SyntacticAnalyzer$actions {
 		String b = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-3)).value;
 		int cleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).right;
-		String c = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).value;
+		Object c = (Object)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).value;
 		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
 		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).right;
 		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).value;
@@ -242,7 +240,25 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 2: // E_PART1 ::= E_PART1 E_SET_DEFINITION 
+          case 2: // E_SEPARATOR ::= section_separator E_SEPARATOR 
+            {
+              Object RESULT =null;
+
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_SEPARATOR",11, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 3: // E_SEPARATOR ::= section_separator 
+            {
+              Object RESULT =null;
+
+              CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_SEPARATOR",11, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
+            }
+          return CUP$SyntacticAnalyzer$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 4: // E_PART1 ::= E_PART1 E_SET_DEFINITION 
             {
               String RESULT =null;
 		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -254,7 +270,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 3: // E_PART1 ::= E_SET_DEFINITION 
+          case 5: // E_PART1 ::= E_SET_DEFINITION 
             {
               String RESULT =null;
 		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -266,7 +282,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 4: // E_PART1 ::= E_PART1 E_REGEX_DEFINITION 
+          case 6: // E_PART1 ::= E_PART1 E_REGEX_DEFINITION 
             {
               String RESULT =null;
 		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -278,7 +294,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 5: // E_PART1 ::= E_REGEX_DEFINITION 
+          case 7: // E_PART1 ::= E_REGEX_DEFINITION 
             {
               String RESULT =null;
 		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -290,7 +306,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 6: // E_SET_DEFINITION ::= id colon id score morethan E_RANGE_VALUE semicolon 
+          case 8: // E_SET_DEFINITION ::= id colon id score morethan E_RANGE_VALUE semicolon 
             {
               String RESULT =null;
 		int w1left = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-6)).left;
@@ -308,7 +324,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 7: // E_SET_DEFINITION ::= error 
+          case 9: // E_SET_DEFINITION ::= error 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -320,7 +336,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 8: // E_RANGE_VALUE ::= E_RANGE_ELEMENT range E_RANGE_ELEMENT 
+          case 10: // E_RANGE_VALUE ::= E_RANGE_ELEMENT range E_RANGE_ELEMENT 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
@@ -335,7 +351,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 9: // E_RANGE_VALUE ::= E_RANGE_LIST 
+          case 11: // E_RANGE_VALUE ::= E_RANGE_LIST 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -347,7 +363,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 10: // E_RANGE_LIST ::= E_RANGE_LIST comma E_RANGE_ELEMENT 
+          case 12: // E_RANGE_LIST ::= E_RANGE_LIST comma E_RANGE_ELEMENT 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
@@ -362,7 +378,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 11: // E_RANGE_LIST ::= E_RANGE_ELEMENT 
+          case 13: // E_RANGE_LIST ::= E_RANGE_ELEMENT 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -374,7 +390,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 12: // E_RANGE_ELEMENT ::= id 
+          case 14: // E_RANGE_ELEMENT ::= id 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -386,7 +402,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 13: // E_RANGE_ELEMENT ::= number 
+          case 15: // E_RANGE_ELEMENT ::= number 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -398,7 +414,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 14: // E_RANGE_ELEMENT ::= range_special_char 
+          case 16: // E_RANGE_ELEMENT ::= range_special_char 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -410,7 +426,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 15: // E_RANGE_ELEMENT ::= string 
+          case 17: // E_RANGE_ELEMENT ::= string 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -422,7 +438,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 16: // E_RANGE_ELEMENT ::= morethan 
+          case 18: // E_RANGE_ELEMENT ::= morethan 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -434,7 +450,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 17: // E_RANGE_ELEMENT ::= score 
+          case 19: // E_RANGE_ELEMENT ::= score 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -446,7 +462,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 18: // E_RANGE_ELEMENT ::= key_o 
+          case 20: // E_RANGE_ELEMENT ::= key_o 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -458,7 +474,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 19: // E_RANGE_ELEMENT ::= key_c 
+          case 21: // E_RANGE_ELEMENT ::= key_c 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -470,7 +486,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 20: // E_RANGE_ELEMENT ::= dot 
+          case 22: // E_RANGE_ELEMENT ::= dot 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -482,7 +498,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 21: // E_RANGE_ELEMENT ::= or_sign 
+          case 23: // E_RANGE_ELEMENT ::= or_sign 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -494,7 +510,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 22: // E_RANGE_ELEMENT ::= plus_sign 
+          case 24: // E_RANGE_ELEMENT ::= plus_sign 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -506,7 +522,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 23: // E_RANGE_ELEMENT ::= error 
+          case 25: // E_RANGE_ELEMENT ::= error 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -518,7 +534,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 24: // E_REGEX_DEFINITION ::= id score morethan E_REGEX_VALUE semicolon 
+          case 26: // E_REGEX_DEFINITION ::= id score morethan E_REGEX_VALUE semicolon 
             {
               String RESULT =null;
 		int nameleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-4)).left;
@@ -533,7 +549,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 25: // E_REGEX_VALUE ::= E_REGEX_VALUE E_REGEX_ELEMENT 
+          case 27: // E_REGEX_VALUE ::= E_REGEX_VALUE E_REGEX_ELEMENT 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
@@ -548,7 +564,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 26: // E_REGEX_VALUE ::= E_REGEX_ELEMENT 
+          case 28: // E_REGEX_VALUE ::= E_REGEX_ELEMENT 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -560,7 +576,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 27: // E_REGEX_ELEMENT ::= dot 
+          case 29: // E_REGEX_ELEMENT ::= dot 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -572,7 +588,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 28: // E_REGEX_ELEMENT ::= id 
+          case 30: // E_REGEX_ELEMENT ::= id 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -584,7 +600,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 29: // E_REGEX_ELEMENT ::= asterisk 
+          case 31: // E_REGEX_ELEMENT ::= asterisk 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -596,7 +612,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 30: // E_REGEX_ELEMENT ::= or_sign 
+          case 32: // E_REGEX_ELEMENT ::= or_sign 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -608,7 +624,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 31: // E_REGEX_ELEMENT ::= string 
+          case 33: // E_REGEX_ELEMENT ::= string 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -620,7 +636,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 32: // E_REGEX_ELEMENT ::= number 
+          case 34: // E_REGEX_ELEMENT ::= number 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -632,7 +648,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 33: // E_REGEX_ELEMENT ::= plus_sign 
+          case 35: // E_REGEX_ELEMENT ::= plus_sign 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -644,7 +660,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 34: // E_REGEX_ELEMENT ::= key_o id key_c 
+          case 36: // E_REGEX_ELEMENT ::= key_o id key_c 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
@@ -656,7 +672,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 35: // E_REGEX_ELEMENT ::= error 
+          case 37: // E_REGEX_ELEMENT ::= error 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
@@ -668,7 +684,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 36: // E_PART2 ::= E_EXPR_TESTING semicolon E_PART2 
+          case 38: // E_PART2 ::= E_EXPR_TESTING semicolon E_PART2 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;
@@ -680,7 +696,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 37: // E_PART2 ::= E_EXPR_TESTING semicolon 
+          case 39: // E_PART2 ::= E_EXPR_TESTING semicolon 
             {
               String RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-1)).left;
@@ -692,7 +708,7 @@ class CUP$SyntacticAnalyzer$actions {
           return CUP$SyntacticAnalyzer$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 38: // E_EXPR_TESTING ::= id colon string 
+          case 40: // E_EXPR_TESTING ::= id colon string 
             {
               String RESULT =null;
 		int nameleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.elementAt(CUP$SyntacticAnalyzer$top-2)).left;

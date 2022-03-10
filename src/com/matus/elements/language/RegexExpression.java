@@ -1,5 +1,7 @@
-package com.matus.elements;
+package com.matus.elements.language;
 
+import com.matus.elements.afd.AFDNode;
+import com.matus.elements.afd.NodeTree;
 import com.matus.elements.afn.AFNStructure;
 
 import java.util.ArrayList;

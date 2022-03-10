@@ -2,10 +2,9 @@
 
 package com.matus.analyzers;
 
-import com.matus.Main;import com.matus.elements.LexicError;
+import com.matus.Main;
 
 import java_cup.runtime.Symbol;
-import java_cup.runtime.*;
 
 
 /**
@@ -38,11 +37,11 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
    * Translates characters to character classes
    */
   private static final String ZZ_CMAP_PACKED = 
-    "\11\0\1\1\1\3\1\6\1\6\1\3\22\0\1\1\1\5\1\12"+
-    "\2\17\1\32\1\17\1\15\2\17\1\27\1\31\1\25\1\22\1\26"+
-    "\1\2\12\11\1\23\1\24\1\4\1\17\1\7\2\17\15\10\1\14"+
-    "\14\10\1\17\1\13\4\17\15\10\1\14\14\10\1\20\1\30\1\21"+
-    "\1\16\6\0\1\6\u1fa2\0\1\6\1\6\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
+    "\11\0\1\1\1\3\1\33\1\33\1\3\22\0\1\1\1\5\1\11"+
+    "\2\17\1\32\1\17\1\14\2\17\1\27\1\31\1\25\1\22\1\26"+
+    "\1\2\12\10\1\23\1\24\1\4\1\17\1\6\2\17\15\7\1\13"+
+    "\14\7\1\17\1\12\2\17\1\16\1\17\15\7\1\13\14\7\1\20"+
+    "\1\30\1\21\1\15\6\0\1\33\u1fa2\0\1\33\1\33\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
 
   /** 
    * Translates characters to character classes
@@ -86,11 +85,11 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\33\0\66\0\121\0\154\0\33\0\33\0\207"+
-    "\0\242\0\275\0\330\0\33\0\33\0\33\0\33\0\33"+
-    "\0\33\0\33\0\33\0\33\0\33\0\33\0\363\0\u010e"+
-    "\0\u0129\0\275\0\33\0\33\0\33\0\33\0\33\0\u0144"+
-    "\0\u0129";
+    "\0\0\0\34\0\70\0\124\0\160\0\34\0\34\0\214"+
+    "\0\250\0\304\0\340\0\34\0\34\0\34\0\34\0\34"+
+    "\0\34\0\34\0\34\0\34\0\34\0\34\0\374\0\u0118"+
+    "\0\u0134\0\304\0\34\0\34\0\34\0\34\0\34\0\u0150"+
+    "\0\34";
 
   private static int [] zzUnpackRowMap() {
     int [] result = new int[33];
@@ -116,18 +115,17 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\2\1\3\1\4\1\3\1\5\1\6\1\0\1\7"+
-    "\1\10\1\11\1\12\1\13\1\10\1\6\1\14\1\6"+
-    "\1\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24"+
-    "\1\25\1\26\1\27\34\0\1\3\1\0\1\3\31\0"+
-    "\1\30\35\0\1\31\35\0\2\10\2\0\1\10\27\0"+
-    "\1\11\21\0\12\32\1\33\20\32\12\0\1\34\1\0"+
-    "\1\35\1\36\47\0\1\37\3\30\1\0\27\30\3\31"+
-    "\1\0\1\31\1\40\1\0\27\31\1\0\1\31\1\40"+
-    "\1\0\1\41\23\31";
+    "\1\2\1\3\1\4\1\3\1\5\1\6\1\7\1\10"+
+    "\1\11\1\12\1\13\1\10\1\6\1\14\2\6\1\15"+
+    "\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25"+
+    "\1\26\1\27\36\0\1\3\1\0\1\3\32\0\1\30"+
+    "\36\0\1\31\35\0\2\10\2\0\1\10\2\0\1\10"+
+    "\25\0\1\11\23\0\11\32\1\33\22\32\11\0\1\34"+
+    "\1\0\1\35\1\36\51\0\1\37\1\0\3\30\1\0"+
+    "\30\30\5\31\1\40\1\0\25\31\6\0\1\41\25\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[351];
+    int [] result = new int[364];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -166,7 +164,7 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\1\0\1\11\3\1\2\11\4\1\13\11\2\1\2\0"+
-    "\5\11\1\0\1\1";
+    "\5\11\1\0\1\11";
 
   private static int [] zzUnpackAttribute() {
     int [] result = new int[33];
@@ -265,7 +263,7 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
     char [] map = new char[0x110000];
     int i = 0;  /* index in packed string  */
     int j = 0;  /* index in unpacked array */
-    while (i < 126) {
+    while (i < 130) {
       int  count = packed.charAt(i++);
       char value = packed.charAt(i++);
       do map[j++] = value; while (--count > 0);
@@ -651,7 +649,7 @@ public class LexicAnalyzer implements java_cup.runtime.Scanner {
             // fall through
           case 28: break;
           case 5: 
-            { System.out.println("Reconocio token:<id> lexema:"+yytext() + "-" + yyline + "-" + yycolumn);Main.logToken("id", yytext(), yyline, yycolumn);return new Symbol(Symbols.id, yycolumn, yyline, yytext());
+            { System.out.println("Reconocio token:<id> lexema:"+yytext() + ":" + yyline + "-" + yycolumn);Main.logToken("id", yytext(), yyline, yycolumn);return new Symbol(Symbols.id, yycolumn, yyline, yytext());
             } 
             // fall through
           case 29: break;

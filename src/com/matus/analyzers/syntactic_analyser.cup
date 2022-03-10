@@ -1,8 +1,8 @@
 package com.matus.analyzers;
 import java_cup.runtime.Symbol;
-import com.matus.elements.Token;
+import com.matus.elements.language.Token;
 import com.matus.Main;
-import com.matus.elements.SyntacticError;
+import com.matus.elements.language.SyntacticError;
 
 //terminal delimiters;
 //terminal String comment, multicomment;
@@ -16,11 +16,19 @@ non terminal String Abby, E_PART1, E_PART2;
 non terminal String E_SET_DEFINITION, E_REGEX_DEFINITION, E_EXPR_TESTING;
 non terminal String E_RANGE_VALUE, E_RANGE_ELEMENT, E_RANGE_LIST;
 non terminal String E_REGEX_VALUE, E_REGEX_ELEMENT;
+non terminal E_SEPARATOR;
 terminal error String;
 
-start with Abby; //TODO INICIO
+start with Abby;
 
-Abby::= key_o:a E_PART1:b section_separator:c E_PART2:d key_c:e {: System.out.println("Sintactico terminado");  RESULT = a+b+c+d+e; :};
+Abby::= key_o:a E_PART1:b E_SEPARATOR:c E_PART2:d key_c:e {: System.out.println("Sintactico terminado");  RESULT = a+b+c+d+e; :};
+
+
+
+E_SEPARATOR::=section_separator E_SEPARATOR
+    |section_separator;
+
+
 
 E_PART1::=  E_PART1 E_SET_DEFINITION:d {: System.out.println("Grupo definido!:" + d); :}
     |E_SET_DEFINITION:d {: System.out.println("ultimo Regex definido!:" + d); :}

@@ -136,7 +136,13 @@ public class MainWindow extends JFrame {
         });
 
 
-        analyzeEntryButton.addActionListener( e -> Main.parseExpFile());
+        analyzeEntryButton.addActionListener( e -> {
+            outputTextArea.setText("");
+            int result = Main.parseExpFile();
+            System.out.println("Parse result: " + result);
+            Main.cprintln("Return code for parse:" + result);
+
+        });
 
         genereteAutomatsButton.addActionListener( e -> {
             Generator.generateAutomats();

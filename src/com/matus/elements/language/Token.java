@@ -1,4 +1,4 @@
-package com.matus.elements;
+package com.matus.elements.language;
 
 public class Token {
 

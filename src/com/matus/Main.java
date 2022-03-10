@@ -7,12 +7,11 @@ import java.util.*;
 
 import com.matus.analyzers.LexicAnalyzer;
 import com.matus.analyzers.SyntacticAnalyzer;
-import com.matus.elements.*;
+import com.matus.elements.afd.AFDNode;
+import com.matus.elements.language.*;
 import com.matus.exceptions.InvalidCharacterException;
 import com.matus.gui.MainWindow;
 import java_cup.runtime.Symbol;
-
-import javax.swing.*;
 
 public class Main {
 
@@ -33,9 +32,9 @@ public class Main {
     private static List<LexicError> lexicErrorList= new ArrayList<>();
     private static List<SyntacticError> syntacticErrorList= new ArrayList<>();
 
-    private static List<Group> groupList = new ArrayList<>();
-    private static List<RegexExpression> regexList = new ArrayList<>();
-    //private static List<RegexTest> regexTestList = new ArrayList<>();
+    private static Map<String, Group> groupList = new HashMap<>();
+    private static Map<String, RegexExpression> regexList = new HashMap<>();
+    private static List<RegexTest> regexTestList = new ArrayList<>();
 
     public static void main(String[] args){
 
@@ -45,29 +44,34 @@ public class Main {
         //rawData = ".<->{digito}<->.<->\".\"<->+<->{digito}";
         //rawData = ".<->{digito}<->*<->|<->\"_\"<->{letra}<->{digito}";
         //logRegex("RegexPrueba1",".<->*<->.<->\"z\"<->b<->*<->.<->c<->d",0,0);  //TODO please delete this lmao
-        logRegex("RegexPrueba1",".<->|<->a<->b<->|<->c<->d",0,0);  //TODO please delete this lmao
+        //logRegex("RegexPrueba1",".<->a<->+<->b",0,0);  //TODO please delete this lmao
 
+        //parseExpFile();
 
-
-
-        //mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
-        //mainWindow.setVisible (true);
-        //System.out.println("calma, se manejo todo");
+        mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
+        mainWindow.setVisible (true);
+        System.out.println("calma, se manejo todo");
     }
 
     //0: success
     //1: lexic error (remember to clean tables)
     //2: syntactic error (remember to clean tables)
     //3: File error
+    public static Map<String, Boolean> usedGroupsInRegex;
     public static int parseExpFile() {
-        //Cleaning
-        mainWindow.outputTextArea.setText("");
 
-        String input = mainWindow.inputTextArea.getText();
+
+        usedGroupsInRegex = new HashMap<>();
+
+        //Cleaning
+
+        String input = mainWindow.inputTextArea.getText(); //TODO uncomment all
         System.out.println("TEXTO A ANALIZAR:");
         System.out.println(input);
 
         FileHandler.writeToFile("./tmp.exp", input, false);
+
+
         try {
             LexicAnalyzer lexic = new LexicAnalyzer(
                     new BufferedReader(new FileReader("./tmp.exp"))
@@ -92,9 +96,53 @@ public class Main {
             //Syntactic error logged by self class, no need for code
         }
 
-        //No error catched? sheeesh
-        dprint("no paso nada oiga");
+        //Used groups without declaration
+        for (var entry : usedGroupsInRegex.entrySet()) {
+            String key = entry.getKey();
+            key = key.substring(1, key.length()-1);
+            if (!groupList.containsKey(key)) {
+                String f = String.format("Se ha hecho uso del grupo %s sin ser definido en el archivo", entry.getKey());
+                cprintln(String.format("%s (f:%s c:%s)", f, -1, -1));
+                logSyntacticError(entry.getKey(), "{group}", f, -1, -1);
+                return 2;
+            }
+        }
+
+
+        //Testing regex that doesn't exist
+        for (RegexTest regexTest : regexTestList) {
+            if (!regexList.containsKey(regexTest.regexNameToRun)) {
+                String f = String.format("Se ha hecho uso del regex %s sin ser definido en el archivo", regexTest.regexNameToRun);
+                cprintln(String.format("%s (f:%s c:%s)", f, -1, -1));
+                logSyntacticError(regexTest.regexNameToRun, "{regex}", f, -1, -1);
+                return 2;
+            }
+        }
+
+
+
+
+        //No error in the way? sheeesh
+        analyze();
         return 0;
+    }
+
+
+    public static void analyze() {
+        for (RegexTest regexTest : regexTestList) {
+            System.out.printf("Testing Regex->%s  with string->%s\n", regexTest.regexNameToRun, regexTest.str);
+            RegexExpression regex = regexList.get(regexTest.regexNameToRun); //Existence checked in parse phase
+
+            AFDNode currentState = regex.afd_nodes.get(0);
+            boolean error = false;
+
+
+            for (char c: regexTest.str.toCharArray()) {
+                //"asdasd".contains()
+            }
+
+
+        }
     }
 
 
@@ -149,26 +197,36 @@ public class Main {
         }
 
         //sheeeesh
-        groupList.add(new Group(name, rawData));
+        if (groupList.containsKey(name)) {
+            cprintln(String.format("(Advertencia) El grupo %s fue definido otra vez y sera sobreescrito", name));
+        }
+
+        groupList.put(name, new Group(name, rawData));
+        cprintln(String.format("Grupo %s definido con exito", name));
     }
 
 
     public static void logRegex(String name, String rawData, int row, int column) {
-        RegexExpression exp = new RegexExpression(name, rawData);
-        boolean correctAFD = Generator.generateAFD(exp, row, column);
+        RegexExpression exp = new RegexExpression(name, rawData.replaceAll("<->",""));
+        boolean correctAFD = Generator.generateAFD(exp, rawData, row, column);
         if (!correctAFD) { return; }
-        boolean correctAFN = Generator.generateAFN(exp, row, column); //FIXME correct afd means correct afn? idk, just in case
+        boolean correctAFN = Generator.generateAFN(exp, rawData, row, column); //FIXME correct afd means correct afn? idk, just in case
         if (!correctAFN) { return; }
-        regexList.add(exp);
-        dprint(String.format("Regex %s logged sucessfully", exp.name));
 
+        if (regexList.containsKey(name)) {
+            cprintln(String.format("(Advertencia) El regex %s fue definido otra vez y sera sobreescrito", name));
+        }
+
+        regexList.put(exp.name, exp);
+        cprintln(String.format("Regex %s definido con exito : %s", exp.name, exp.pattern));
+        System.out.printf("Regex %s definido con exito : %s%n", exp.name, exp.pattern);
     }
 
 
     public static void logRegexTest(String regexName, String str) {
-
-        System.out.printf("Testing regex with name %s for string \" %s \"\n", regexName, str);
-
+        str = str.substring(1, str.length()-1);
+        System.out.printf("Testing regex with name %s for string <%s>\n", regexName, str);
+        regexTestList.add(new RegexTest(str, regexName));
     }
 
     public static void logToken(String id, String lex, int row, int column) {

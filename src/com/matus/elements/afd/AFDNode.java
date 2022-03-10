@@ -1,4 +1,4 @@
-package com.matus.elements;
+package com.matus.elements.afd;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,9 +1,11 @@
 package com.matus;
 
-import com.matus.elements.*;
+import com.matus.elements.afd.AFDNode;
+import com.matus.elements.afd.NodeTree;
 import com.matus.elements.afn.AFNNode;
 import com.matus.elements.afn.AFNStructure;
 import com.matus.elements.afn.AFNTransition;
+import com.matus.elements.language.RegexExpression;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,9 +22,9 @@ public class Generator {
     }
 
 
-    public static boolean generateAFD(RegexExpression regexExp , int row, int column) {
+    public static boolean generateAFD(RegexExpression regexExp, String rawData, int row, int column) {
 
-        String rawData = regexExp.pattern;
+        //String rawData = regexExp.pattern; deprecated
 
         //*Parse this baby
         String graphvizString = "digraph {\nnodesep=3;\n";
@@ -36,13 +38,25 @@ public class Generator {
         regexExp.leavesList = leafList;
 
         rawData = ".<->" + rawData + "<->#";
+        System.out.println("raw data is " + rawData);
         String[] _arr = rawData.split("<->");
         for (String s : _arr) {
-            if (s.contains("{") | s.contains("\"") ) { //FIXME | s.contains("\"")
+            if (s.contains("{")) { //FIXME | s.contains("\"")
+                //System.out.println("Skipping separation of group:" + s);
+                System.out.println("Adding to used in regex:");
+                System.out.println(s);
+                tmpList.add(s);
+                Main.usedGroupsInRegex.put(s, true);
+                continue;
+            }
+
+            if ( s.contains("\"") ) { //FIXME | s.contains("\"")
                 //System.out.println("Skipping separation of group:" + s);
                 tmpList.add(s);
                 continue;
             }
+
+
             //If id element (multiple single elements concatenated):
             for (int j = 0; j < s.length(); j++) {
                 String subs = s.substring(j, j + 1);
@@ -277,14 +291,14 @@ public class Generator {
             return false;
         }
         regexExp.treeHead = stack.peek();
-        regexExp.afd_nodes = Generator.generateStates(regexExp);
+        Generator.generateStates(regexExp);
         return true;
     }
 
-    public static boolean generateAFN(RegexExpression regexExp, int row, int column) {
+    public static boolean generateAFN(RegexExpression regexExp, String rawData, int row, int column) {
 
         System.out.println("Performing AFN parsing");
-        String rawData = regexExp.pattern;
+        //String rawData = regexExp.pattern; deprecated
 
         //*Parse this baby
         int nodesCreated = 0;
@@ -523,7 +537,7 @@ public class Generator {
         return true;
     }
 
-    public static List<AFDNode> generateStates(RegexExpression regex) {
+    public static void generateStates(RegexExpression regex) {
 
         System.out.println("###################################################");
         System.out.println("Generating AFD for:");
@@ -677,7 +691,7 @@ public class Generator {
         System.out.println("#########################");
         System.out.println(graphviz);
         System.out.println("#########################");
-        return nodeList;
+        regex.afd_nodes = nodeList;
     }
 
     public static List<String> specialOperatorsExpansion(List<String> list) {
