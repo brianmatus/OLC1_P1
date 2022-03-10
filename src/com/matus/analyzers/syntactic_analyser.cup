@@ -31,7 +31,7 @@ E_SEPARATOR::=section_separator E_SEPARATOR
 
 
 E_PART1::=  E_PART1 E_SET_DEFINITION:d {: System.out.println("Grupo definido!:" + d); :}
-    |E_SET_DEFINITION:d {: System.out.println("ultimo Regex definido!:" + d); :}
+    |E_SET_DEFINITION:d {: System.out.println("ultimo Grupo definido!:" + d); :}
     |E_PART1 E_REGEX_DEFINITION:d {: System.out.println("Regex definido!:" + d); :}
     |E_REGEX_DEFINITION:d {: System.out.println("ultimo Regex definido!:" + d); :};
 

@@ -46,11 +46,11 @@ public class Main {
         //logRegex("RegexPrueba1",".<->*<->.<->\"z\"<->b<->*<->.<->c<->d",0,0);  //TODO please delete this lmao
         //logRegex("RegexPrueba1",".<->a<->+<->b",0,0);  //TODO please delete this lmao
 
-        //parseExpFile();
+        parseExpFile();
 
-        mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
-        mainWindow.setVisible (true);
-        System.out.println("calma, se manejo todo");
+        //mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
+        //mainWindow.setVisible (true);
+        //System.out.println("calma, se manejo todo");
     }
 
     //0: success
@@ -62,20 +62,32 @@ public class Main {
 
 
         usedGroupsInRegex = new HashMap<>();
+        String input;
 
         //Cleaning
 
-        String input = mainWindow.inputTextArea.getText(); //TODO uncomment all
+        /*
+        input = mainWindow.inputTextArea.getText(); //TODO uncomment all
         System.out.println("TEXTO A ANALIZAR:");
         System.out.println(input);
+
+
 
         FileHandler.writeToFile("./tmp.exp", input, false);
 
 
+         */
+
         try {
+
+            /*
             LexicAnalyzer lexic = new LexicAnalyzer(
                     new BufferedReader(new FileReader("./tmp.exp"))
             );
+
+             */
+
+            LexicAnalyzer lexic = new Scanner( new java.io.StringReader(input) );
 
             SyntacticAnalyzer syntactic = new SyntacticAnalyzer(lexic);
             Symbol result = syntactic.parse();
@@ -129,24 +141,74 @@ public class Main {
 
 
     public static void analyze() {
+        System.out.println("##############################################################################");
+        System.out.println("##############################################################################");
+        System.out.println("##############################################################################");
+        System.out.println("##############################################################################");
         for (RegexTest regexTest : regexTestList) {
             System.out.printf("Testing Regex->%s  with string->%s\n", regexTest.regexNameToRun, regexTest.str);
             RegexExpression regex = regexList.get(regexTest.regexNameToRun); //Existence checked in parse phase
 
             AFDNode currentState = regex.afd_nodes.get(0);
-            boolean error = false;
-
 
             for (char c: regexTest.str.toCharArray()) {
-                //"asdasd".contains()
+                boolean found = false;
+                for (var entry : currentState.transitions.entrySet()) {
+                    //System.out.println("Some transition has " + entry.getKey());
+                    //System.out.println("comparing to " + c);
+
+                    String key = entry.getKey();
+
+                    //Groups
+                    if (key.contains("{")) {
+
+                        String k = key.substring(1, key.length()-1);
+                        Group group = groupList.get(k);
+                        String members = group.elements;
+
+
+                        if (members.contains("~")) {
+                            int first = members.charAt(0);
+                            int second = members.charAt(2);
+                            //System.out.println("ascii of first:" + first);
+                            //System.out.println("ascii of first:" + second);
+
+                            System.out.println((int) c);
+                            if ((int) c >= first && (int) c <= second) {
+                                currentState = entry.getValue();
+                                found = true;
+                                System.out.println("moving to S" + currentState.number);
+                            }
+                        }
+
+
+                        continue;
+                    }
+                    // in theory, this also includes list, but idk
+                    if (key.contains(c+"")) {
+                        currentState = entry.getValue();
+                        found = true;
+                        //System.out.println("moving to S" + currentState.number);
+                        continue;
+                    }
+                }
+                if (!found) {
+                    break;
+                }
+            }
+            if (currentState.isAcceptState) {
+                regexTest.isValid = true;
             }
 
-
+            System.out.println(regexTest.str + ":" + (regexTest.isValid ? "VALIDA" : "INVALIDA"));
+            cprintln(regexTest.str + ":" + (regexTest.isValid ? "VALIDA" : "INVALIDA"));
         }
     }
 
 
     public static void logGroup(String keyword, String name, String rawData, int row, int column) {
+
+        System.out.println("Logeando grupo xdxdxd::"  + rawData);
 
         //Correct keyword
         if (groupDefinitionIsUppercase) {
@@ -154,6 +216,7 @@ public class Main {
                 String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case sensitive) %s", keyword);
                 cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
+                System.out.println("error conj");
                 return;
             }
         }
@@ -162,6 +225,7 @@ public class Main {
                 String f = String.format("Para definir conjuntos debes usar la palabra clave CONJ (case insensitive) %s", keyword);
                 cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
+                System.out.println("error conj");
                 return;
             }
         }
@@ -174,6 +238,7 @@ public class Main {
                 String f = String.format("Los elementos de un grupos definidos por rango solo pueden tener 1 caracter %s", keyword);
                 cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
+                System.out.println("error rango");
                 return;
             }
         }
@@ -192,6 +257,7 @@ public class Main {
                 String f = String.format("Los elementos de un grupo definidos por lista solo pueden tener 1 caracter %s", keyword);
                 cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
+                System.out.println("error lista");
                 return;
             }
         }
@@ -200,8 +266,8 @@ public class Main {
         if (groupList.containsKey(name)) {
             cprintln(String.format("(Advertencia) El grupo %s fue definido otra vez y sera sobreescrito", name));
         }
-
         groupList.put(name, new Group(name, rawData));
+        System.out.printf("Grupo %s definido con exito%n", name);
         cprintln(String.format("Grupo %s definido con exito", name));
     }
 

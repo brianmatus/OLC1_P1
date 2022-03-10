@@ -5,7 +5,11 @@
 
 package com.matus.analyzers;
 
+import java_cup.runtime.Symbol;
+import com.matus.elements.language.Token;
 import com.matus.Main;
+import com.matus.elements.language.SyntacticError;
+import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -276,7 +280,7 @@ class CUP$SyntacticAnalyzer$actions {
 		int dleft = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).left;
 		int dright = ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()).right;
 		String d = (String)((java_cup.runtime.Symbol) CUP$SyntacticAnalyzer$stack.peek()).value;
-		 System.out.println("ultimo Regex definido!:" + d); 
+		 System.out.println("ultimo Grupo definido!:" + d); 
               CUP$SyntacticAnalyzer$result = parser.getSymbolFactory().newSymbol("E_PART1",1, ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), ((java_cup.runtime.Symbol)CUP$SyntacticAnalyzer$stack.peek()), RESULT);
             }
           return CUP$SyntacticAnalyzer$result;

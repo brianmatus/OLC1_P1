@@ -11,6 +11,7 @@ public class Group {
 
     public Group(String name, String elements) {
         this.name = name;
+        this.elements = elements;
 
 
     }
