@@ -19,6 +19,8 @@ public class RegexExpression {
     public List<String> nextTable;
     public String expressionTreeGraphviz;
     public List<AFDNode> afd_nodes;
+    public String afdGraphviz;
+
 
     //AFN
     public AFNStructure afnStructure;

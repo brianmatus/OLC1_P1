@@ -48,4 +48,27 @@ public class Utils {
 
 
 
+    public static String arrayToHTMLTable(String title, String[] headers, String[][] dataArray) {
+        String output = String.format("<table border=\"1\"><thead><tr><td>%s</td></tr>",title);
+        //Row 1 of Titles
+        for (String header : headers) {
+            output += String.format("<td>%s</td>", header);
+        }
+        output += "</tr></thead><tbody>";
+        //Row 2 of Values
+        for(String[] data : dataArray) {
+            output += "<tr>";
+            for (String datum : data) {
+                output += String.format("<td>%s</td>",datum);
+            }
+            output += "</tr>";
+        }
+        output += "</tbody></table>";
+        return output;
+    }
+
+
+
+
+
 }

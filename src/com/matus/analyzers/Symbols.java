@@ -8,29 +8,31 @@ package com.matus.analyzers;
 /** CUP generated class containing symbol constants. */
 public class Symbols {
   /* terminals */
-  public static final int string = 22;
-  public static final int asterisk = 15;
-  public static final int number = 21;
+  public static final int string = 24;
+  public static final int asterisk = 16;
+  public static final int number = 23;
   public static final int key_c = 7;
-  public static final int semicolon = 10;
-  public static final int or_sign = 16;
+  public static final int s_dq = 20;
+  public static final int or_sign = 17;
+  public static final int semicolon = 11;
+  public static final int lessthan = 10;
   public static final int range = 5;
   public static final int EOF = 0;
   public static final int morethan = 9;
-  public static final int id = 19;
-  public static final int dot = 14;
-  public static final int section_separator = 13;
+  public static final int id = 21;
+  public static final int dot = 15;
+  public static final int section_separator = 14;
+  public static final int question_mark = 25;
   public static final int error = 1;
   public static final int score = 8;
-  public static final int word = 20;
-  public static final int colon = 11;
+  public static final int word = 22;
+  public static final int colon = 12;
   public static final int s_simplequote = 3;
   public static final int s_newline = 2;
-  public static final int range_special_char = 18;
-  public static final int plus_sign = 17;
-  public static final int String = 23;
+  public static final int range_special_char = 19;
+  public static final int plus_sign = 18;
   public static final int s_doublequote = 4;
-  public static final int comma = 12;
+  public static final int comma = 13;
   public static final int key_o = 6;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -43,6 +45,7 @@ public class Symbols {
   "key_c",
   "score",
   "morethan",
+  "lessthan",
   "semicolon",
   "colon",
   "comma",
@@ -52,11 +55,12 @@ public class Symbols {
   "or_sign",
   "plus_sign",
   "range_special_char",
+  "s_dq",
   "id",
   "word",
   "number",
   "string",
-  "String"
+  "question_mark"
   };
 }
 

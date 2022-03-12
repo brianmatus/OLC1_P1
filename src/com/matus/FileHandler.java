@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FileHandler {
 
@@ -126,6 +128,16 @@ public class FileHandler {
     }
 
     public static void writeToFile(String filename, String theRecord, boolean openFileAfter){
+
+
+        try {
+            Files.createDirectories(Paths.get(filename));
+        } catch (IOException e) {
+            //System.out.println("Error creando directorio");
+            //e.printStackTrace();
+        }
+
+        System.out.println("writing to file with name " + filename);
         File theFile = new File(filename);
         if(theFile.exists()) {
             theFile.delete();
@@ -139,7 +151,7 @@ public class FileHandler {
             }
         } catch (IOException e) {
             System.out.println("Error creando archivo:" + filename);
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
     }

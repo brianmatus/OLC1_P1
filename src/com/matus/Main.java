@@ -3,6 +3,7 @@ package com.matus;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 import com.matus.analyzers.LexicAnalyzer;
@@ -13,28 +14,32 @@ import com.matus.exceptions.InvalidCharacterException;
 import com.matus.gui.MainWindow;
 import java_cup.runtime.Symbol;
 
+import javax.swing.*;
+
 public class Main {
 
     //Internal vars
     private static boolean debug = true;
     public static boolean debugLoadExp = true;
+    public static boolean openImagesOnChange = true;
+    public static final String carnet = "201801290";
 
-    public static boolean stopLexOnError = true;
+    public static boolean stopLexOnError = false;
     public static boolean groupDefinitionIsUppercase = true;
 
     //Global utils
     private static final Scanner scanner = new Scanner(System.in);
-    private static final MainWindow mainWindow = new MainWindow();
+    public static final MainWindow mainWindow = new MainWindow();
 
     //Lists
-    private static List<Token> tokenList= new ArrayList<>();
+    public static List<Token> tokenList= new ArrayList<>();
 
-    private static List<LexicError> lexicErrorList= new ArrayList<>();
-    private static List<SyntacticError> syntacticErrorList= new ArrayList<>();
+    public static List<LexicError> lexicErrorList= new ArrayList<>();
+    public static List<SyntacticError> syntacticErrorList= new ArrayList<>();
 
-    private static Map<String, Group> groupList = new HashMap<>();
-    private static Map<String, RegexExpression> regexList = new HashMap<>();
-    private static List<RegexTest> regexTestList = new ArrayList<>();
+    public static Map<String, Group> groupList = new HashMap<>();
+    public static Map<String, RegexExpression> regexList = new HashMap<>();
+    public static List<RegexTest> regexTestList = new ArrayList<>();
 
     public static void main(String[] args){
 
@@ -46,11 +51,8 @@ public class Main {
         //logRegex("RegexPrueba1",".<->*<->.<->\"z\"<->b<->*<->.<->c<->d",0,0);  //TODO please delete this lmao
         //logRegex("RegexPrueba1",".<->a<->+<->b",0,0);  //TODO please delete this lmao
 
-        parseExpFile();
-
-        //mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
-        //mainWindow.setVisible (true);
-        //System.out.println("calma, se manejo todo");
+        mainWindow.setDefaultCloseOperation (JFrame.HIDE_ON_CLOSE);
+        mainWindow.setVisible (true);
     }
 
     //0: success
@@ -60,23 +62,29 @@ public class Main {
     public static Map<String, Boolean> usedGroupsInRegex;
     public static int parseExpFile() {
 
-
-        usedGroupsInRegex = new HashMap<>();
-        String input;
-
         //Cleaning
+        usedGroupsInRegex = new HashMap<>();
+        tokenList= new ArrayList<>();
 
-        /*
-        input = mainWindow.inputTextArea.getText(); //TODO uncomment all
+        lexicErrorList= new ArrayList<>();
+        syntacticErrorList= new ArrayList<>();
+
+        groupList = new HashMap<>();
+        regexList = new HashMap<>();
+        regexTestList = new ArrayList<>();
+        String input = mainWindow.inputTextArea.getText();
+        //pido perdon :(
+        //input = input.replaceAll("\\\\\\\"","┤");
+        input = input.replaceAll("\\\\\"","┤");
+        input = input.replaceAll("\\\\n","Á");
+        input = input.replaceAll("\\\\'","Â");
+
+
         System.out.println("TEXTO A ANALIZAR:");
         System.out.println(input);
 
-
-
-        FileHandler.writeToFile("./tmp.exp", input, false);
-
-
-         */
+        //FileHandler.writeToFile("./tmp.exp", input, false);
+        //input = String.join("\n",FileHandler.readFile("./tmp.exp",-1));
 
         try {
 
@@ -87,7 +95,7 @@ public class Main {
 
              */
 
-            LexicAnalyzer lexic = new Scanner( new java.io.StringReader(input) );
+            LexicAnalyzer lexic = new LexicAnalyzer( new java.io.StringReader(input) );
 
             SyntacticAnalyzer syntactic = new SyntacticAnalyzer(lexic);
             Symbol result = syntactic.parse();
@@ -131,9 +139,6 @@ public class Main {
             }
         }
 
-
-
-
         //No error in the way? sheeesh
         analyze();
         return 0;
@@ -146,57 +151,129 @@ public class Main {
         System.out.println("##############################################################################");
         System.out.println("##############################################################################");
         for (RegexTest regexTest : regexTestList) {
+            System.out.println("####################");
             System.out.printf("Testing Regex->%s  with string->%s\n", regexTest.regexNameToRun, regexTest.str);
+            cprintln("####################");
+            cprintln(String.format("Testing Regex->%s  with string->%s\n", regexTest.regexNameToRun, regexTest.str));
             RegexExpression regex = regexList.get(regexTest.regexNameToRun); //Existence checked in parse phase
 
             AFDNode currentState = regex.afd_nodes.get(0);
 
-            for (char c: regexTest.str.toCharArray()) {
-                boolean found = false;
-                for (var entry : currentState.transitions.entrySet()) {
-                    //System.out.println("Some transition has " + entry.getKey());
-                    //System.out.println("comparing to " + c);
+            boolean found = true; //empty strings? idk
+            str: for (char _c: regexTest.str.toCharArray()) {
 
+                String c = "" + _c;
+
+                //Should be unnecesary? idk
+                if (c.equals("┤")) c = "\\\""; // \n
+                if (c.equals("Á")) c = "\\n"; // \n
+                if (c.equals("Â")) c = "\\'"; // \n
+
+
+                found = false;
+                System.out.println("########");
+                System.out.println("Current State:S" + currentState.number);
+                for (var entry : currentState.transitions.entrySet()) {
                     String key = entry.getKey();
+                    System.out.println("transition to S" +  entry.getValue().number + " has symbol " + key);
+                    System.out.println("comparing to " + c);
+
 
                     //Groups
                     if (key.contains("{")) {
+
+                        System.out.println("Resolving group for" + key);
 
                         String k = key.substring(1, key.length()-1);
                         Group group = groupList.get(k);
                         String members = group.elements;
 
+                        members = members.replaceAll("┤", "\\\\\"");
+                        members = members.replaceAll("Á", "\\\\n");
+                        members = members.replaceAll("Â", "\\\\'");
+                        System.out.println("members of " + key + ": " + members);
 
                         if (members.contains("~")) {
                             int first = members.charAt(0);
                             int second = members.charAt(2);
-                            //System.out.println("ascii of first:" + first);
-                            //System.out.println("ascii of first:" + second);
+                            int member = c.charAt(0);
+                            /*
+                            System.out.println("ascii of first:" + first);
+                            System.out.println("ascii of element:" + member);
+                            System.out.println("ascii of first:" + second);
+                            System.out.println(member >= first && member <= second);
 
-                            System.out.println((int) c);
-                            if ((int) c >= first && (int) c <= second) {
+                             */
+
+
+                            System.out.println(c + "->" + member);
+                            if (member >= first && member <= second) {
+                                //System.out.println("Number in range");
                                 currentState = entry.getValue();
                                 found = true;
+                                System.out.println("range move");
                                 System.out.println("moving to S" + currentState.number);
+                                continue str;
+                            }
+                            else {
+                                continue;
+                            }
+
+
+                        }
+                        //If instead is a list
+                        for (String s : members.split(",")) {
+                            if (s.contains("\"")) {
+                                if (s.substring(1,s.length()-1).equals(c+"")) { //TODO contains? idk
+                                    System.out.println("list moving with removing \"");
+                                    currentState = entry.getValue();
+                                    found = true;
+                                    System.out.println("moving to S" + currentState.number);
+                                    continue str;
+                                }
+                            }
+                            else {
+                                if (s.equals(c+"")) { //TODO contains? idk
+                                    System.out.println("list moving without removing \"");
+                                    currentState = entry.getValue();
+                                    found = true;
+                                    System.out.println("moving to S" + currentState.number);
+                                    continue str;
+                                }
                             }
                         }
+                        continue;
+
+                    }
 
 
-                        continue;
+                    if (key.contains("\"")) {
+                        if (key.substring(1,key.length()-1).equals(c+"")) { //TODO contains? idk
+                            System.out.println("moving with removing \"");
+                            currentState = entry.getValue();
+                            found = true;
+                            System.out.println("moving to S" + currentState.number);
+                            continue str;
+                        }
                     }
-                    // in theory, this also includes list, but idk
-                    if (key.contains(c+"")) {
-                        currentState = entry.getValue();
-                        found = true;
-                        //System.out.println("moving to S" + currentState.number);
-                        continue;
+                    else {
+                        if (key.equals(c+"")) { //TODO contains? idk
+                            System.out.println("moving without removing \"");
+                            currentState = entry.getValue();
+                            found = true;
+                            System.out.println("moving to S" + currentState.number);
+                            continue str;
+                        }
                     }
+
+
+
                 }
                 if (!found) {
                     break;
                 }
             }
-            if (currentState.isAcceptState) {
+            if (currentState.isAcceptState && found) {
                 regexTest.isValid = true;
             }
 
@@ -208,7 +285,7 @@ public class Main {
 
     public static void logGroup(String keyword, String name, String rawData, int row, int column) {
 
-        System.out.println("Logeando grupo xdxdxd::"  + rawData);
+        System.out.println("Logeando grupo::"  + rawData);
 
         //Correct keyword
         if (groupDefinitionIsUppercase) {
@@ -234,7 +311,20 @@ public class Main {
         //Correct range
         if (rawData.contains("~")) {
 
-            if (rawData.length() != 3 /* x~y */) {
+
+            /*
+            System.out.println(rawData);
+            System.out.println("Check for ┤");
+            System.out.println(rawData.contains("┤"));
+            System.out.println("Check for Á");
+            System.out.println(rawData.contains("Á"));
+            System.out.println("Check for Â");
+            System.out.println(rawData.contains("Â"));
+
+             */
+
+
+            if (rawData.length() != 3 && !(rawData.contains("┤") || rawData.contains("Á")||rawData.contains("Â"))/* x~y */) {
                 String f = String.format("Los elementos de un grupos definidos por rango solo pueden tener 1 caracter %s", keyword);
                 cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
@@ -253,7 +343,7 @@ public class Main {
                 }
             }
 
-            if (!allOneCharacter) {
+            if (!allOneCharacter && !(rawData.contains("┤") || rawData.contains("Á")||rawData.contains("Â"))) {
                 String f = String.format("Los elementos de un grupo definidos por lista solo pueden tener 1 caracter %s", keyword);
                 cprintln(String.format("%s (f:%s c:%s)", f, row, column));
                 logSyntacticError(keyword, "conj", f, row, column);
@@ -291,11 +381,13 @@ public class Main {
 
     public static void logRegexTest(String regexName, String str) {
         str = str.substring(1, str.length()-1);
-        System.out.printf("Testing regex with name %s for string <%s>\n", regexName, str);
+        //System.out.printf("Loging test regex with name %s for string <%s>\n", regexName, str);
         regexTestList.add(new RegexTest(str, regexName));
     }
 
     public static void logToken(String id, String lex, int row, int column) {
+        System.out.printf("Reconocio token:<%s> lexema:%s en f:%s c:%s%n", id, lex, row, column);
+
         tokenList.add(new Token(id, lex, row, column));
     }
 
@@ -314,9 +406,23 @@ public class Main {
 
 
     public static void cprintln(Object s) {
-        mainWindow.outputTextArea.setText(mainWindow.outputTextArea.getText() + s.toString() + "\n");
+
+        String str = s.toString();
+
+        str = str.replaceAll("┤", "\\\\\"");
+        str = str.replaceAll("Á", "\\\\n");
+        str = str.replaceAll("Â", "\\\\'");
+
+        mainWindow.outputTextArea.setText(mainWindow.outputTextArea.getText() + str + "\n");
     }
 
     public static void dprint(Object s) {if (debug) {System.out.println(s);}}
 
+    public static void runCMD(String cmd) {
+        try {
+            Runtime.getRuntime().exec("cmd.exe  /C " + cmd);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

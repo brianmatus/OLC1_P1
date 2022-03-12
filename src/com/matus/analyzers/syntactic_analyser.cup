@@ -7,17 +7,18 @@ import com.matus.elements.language.SyntacticError;
 //terminal delimiters;
 //terminal String comment, multicomment;
 terminal String s_newline;
-terminal String s_simplequote, s_doublequote, range, key_o, key_c, score, morethan, semicolon, colon, comma, section_separator;
+terminal String s_simplequote, s_doublequote, range, key_o, key_c, score, morethan, lessthan, semicolon, colon, comma, section_separator;
 terminal String dot, asterisk, or_sign, plus_sign;
-terminal String range_special_char;
+terminal String range_special_char, s_dq;
 terminal String id, word, number, string;
+terminal String question_mark;
 
 non terminal String Abby, E_PART1, E_PART2;
 non terminal String E_SET_DEFINITION, E_REGEX_DEFINITION, E_EXPR_TESTING;
 non terminal String E_RANGE_VALUE, E_RANGE_ELEMENT, E_RANGE_LIST;
 non terminal String E_REGEX_VALUE, E_REGEX_ELEMENT;
-non terminal E_SEPARATOR;
-terminal error String;
+non terminal String E_SEPARATOR;
+//terminal String error;
 
 start with Abby;
 
@@ -48,8 +49,10 @@ E_RANGE_LIST::= E_RANGE_LIST:a comma E_RANGE_ELEMENT:b {: RESULT = a + "," + b; 
 E_RANGE_ELEMENT::= id:a {: RESULT =  a;:}
     |number:a {: RESULT = a; :}
     |range_special_char:a {: RESULT = a; :}
+    |question_mark:a {: RESULT = a; :}
     |string:a {: RESULT = a; :}
     |morethan:a {: RESULT = a; :}
+    |lessthan:a {: RESULT = a; :}
     |score:a {: RESULT = a; :}
     |key_o:a {: RESULT = a; :}
     |key_c:a {: RESULT = a; :}
@@ -68,11 +71,12 @@ E_REGEX_ELEMENT::= dot:a {: RESULT =  a;:}
     |id:a {: RESULT =  a;:}
     |asterisk:a {: RESULT =  a;:}
     |or_sign:a {: RESULT =  a;:}
+    |question_mark:a {: RESULT =  a;:}
     |string:a {: RESULT =  a;:}
     |number:a {: RESULT =  a;:}
     |plus_sign:a {: RESULT =  a;:}
     |key_o id:a key_c  {: RESULT =  "{" + a + "}";:}
-    |error:a {: Main.logSyntacticError("","regex_element","se esperaba id|*|+|\"|\"|string|number|+|{conjunto}",aright,aleft); report_fatal_error("", null);:};
+    |error:a {: System.out.println(a); Main.logSyntacticError("","regex_element","se esperaba id|*|+|\"|\"|string|number|+|{conjunto}",aright,aleft); report_fatal_error("", null);:};
 
 ////////////////////
 E_PART2::= E_EXPR_TESTING:a semicolon E_PART2 {: RESULT = a;:}
